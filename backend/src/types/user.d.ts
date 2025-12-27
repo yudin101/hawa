@@ -9,14 +9,21 @@ export interface User {
   createdAt: string | Date;
 }
 
+interface RequestUser {
+  id: string;
+  role: string;
+  iat: number;
+  exp: number
+}
+
 declare module "express" {
   interface Request {
-    user?: User;
+    user?: RequestUser;
   }
 }
 
-declare global {
-  namespace Express {
-    interface User extends User { }
-  }
-}
+// declare global {
+//   namespace Express {
+//     interface User extends User { }
+//   }
+// }

@@ -2,14 +2,15 @@ import { Request, Response, NextFunction } from "express";
 import pool from "../config/db";
 import bcrypt from "bcrypt";
 import { matchedData } from "express-validator";
-import { userExists } from "../utils/user.utils";
-import { roleExists } from "../utils/role.util";
-import { addressExists } from "../utils/address.util";
+import { findUser } from "../utils/user.util";
+import { findRole } from "../utils/role.util";
+import { findAddress } from "../utils/address.util";
 import { User } from "../types/user";
 import { getTokenExipry, getTokenJti } from "../utils/token.util";
 import env from "../config/env";
 import jwt from "jsonwebtoken";
 import { RefreshTokenPayload } from "../types/refreshTokenPayload";
+import { camelizeKeys } from "humps";
 
 export const registerUser = async (
   req: Request,
@@ -27,22 +28,22 @@ export const registerUser = async (
       role_id: roleId,
     } = matchedData(req);
 
-    if (!(await roleExists(roleId))) {
+    if (!(await findRole("id", roleId))) {
       res.status(400).json({ error: "Role does not exist" });
       return;
     }
 
-    if (await userExists(roleId, "phoneNumber", phoneNumber)) {
+    if (await findUser(roleId, "phone_number", phoneNumber)) {
       res.status(400).json({ error: "Phone number already exists" });
       return;
     }
 
-    if (await userExists(roleId, "email", email)) {
+    if (await findUser(roleId, "email", email)) {
       res.status(400).json({ error: "Email already exists" });
       return;
     }
 
-    if (await userExists(roleId, "username", username)) {
+    if (await findUser(roleId, "username", username)) {
       res.status(400).json({ error: "Username already exists" });
       return;
     }
@@ -52,7 +53,7 @@ export const registerUser = async (
       return;
     }
 
-    if (!(await addressExists(addressId))) {
+    if (!(await findAddress(addressId))) {
       res.status(400).json({ error: "Address does not exist" });
       return;
     }
@@ -90,7 +91,7 @@ export const loginUser = async (
       [username],
     );
 
-    const user = userCheck.rows[0] as User;
+    const user = camelizeKeys(userCheck.rows[0]) as User;
 
     if (!user || !(await bcrypt.compare(password, user["password"]))) {
       res.status(401).json({ error: "Invalid Credentials" });

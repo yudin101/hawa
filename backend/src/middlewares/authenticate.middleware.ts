@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import env from "../config/env";
-import { User } from "../types/user";
+import { RequestUser } from "../types/user";
 
 export const authenticate = (
   req: Request,
@@ -23,7 +23,7 @@ export const authenticate = (
         return;
       }
 
-      req.user = user as User;
+      req.user = user as RequestUser;
       next();
     });
   } catch (err) {

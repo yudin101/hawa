@@ -32,6 +32,11 @@ export const registerUser = async (
       return;
     }
 
+    if (await userExists(roleId, "phoneNumber", phoneNumber)) {
+      res.status(400).json({ error: "Phone number already exists" });
+      return;
+    }
+
     if (await userExists(roleId, "email", email)) {
       res.status(400).json({ error: "Email already exists" });
       return;

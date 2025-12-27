@@ -1,7 +1,10 @@
 import { Router } from "express";
 import registerRoutes from "./register.route";
 import { checkSchema } from "express-validator";
-import { loginValidation } from "../validators/auth.validator";
+import {
+  loginValidation,
+  registerValidation,
+} from "../validators/auth.validator";
 import { validate } from "../middlewares/validation.middleware";
 import { authenticate } from "../middlewares/authenticate.middleware";
 import {
@@ -12,7 +15,7 @@ import {
 
 const router = Router();
 
-router.use("/register", registerRoutes);
+router.use("/register", checkSchema(registerValidation), registerRoutes);
 
 router.post("/login", checkSchema(loginValidation), validate, loginUser);
 

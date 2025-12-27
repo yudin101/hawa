@@ -27,6 +27,6 @@ export const authenticate = (
       next();
     });
   } catch (err) {
-    throw err;
+    next(err);
   }
 };

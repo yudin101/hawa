@@ -10,7 +10,6 @@ import { getTokenExipry, getTokenJti } from "../utils/token.util";
 import env from "../config/env";
 import jwt from "jsonwebtoken";
 import { RefreshTokenPayload } from "../types/refreshTokenPayload";
-import { camelizeKeys } from "humps";
 
 export const registerUser = async (
   req: Request,
@@ -33,17 +32,17 @@ export const registerUser = async (
       return;
     }
 
-    if (await findUser(roleId, "phone_number", phoneNumber)) {
+    if (await findUser("phone_number", phoneNumber)) {
       res.status(400).json({ error: "Phone number already exists" });
       return;
     }
 
-    if (await findUser(roleId, "email", email)) {
+    if (await findUser("email", email)) {
       res.status(400).json({ error: "Email already exists" });
       return;
     }
 
-    if (await findUser(roleId, "username", username)) {
+    if (await findUser("username", username)) {
       res.status(400).json({ error: "Username already exists" });
       return;
     }
@@ -87,11 +86,17 @@ export const loginUser = async (
 
   try {
     const userCheck = await pool.query(
-      `SELECT * FROM users WHERE username = $1`,
+      `SELECT
+        id,
+        role_id AS "roleId",
+        username,
+        password
+      FROM users
+      WHERE username = $1`,
       [username],
     );
 
-    const user = camelizeKeys(userCheck.rows[0]) as User;
+    const user = userCheck.rows[0] as User;
 
     if (!user || !(await bcrypt.compare(password, user["password"]))) {
       res.status(401).json({ error: "Invalid Credentials" });
@@ -228,6 +233,7 @@ export const logoutUser = async (
 
     res.status(200).json({ message: "Logout successful." });
   } catch (err) {
+    console.error("Error registering user: ");
     next(err);
   }
 };

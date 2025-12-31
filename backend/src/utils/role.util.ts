@@ -1,9 +1,9 @@
 import pool from "../config/db";
 
 export const findRole = async (
-  valueType: "name" | "id",
+  valueType: "role" | "id",
   value: string,
-): Promise<boolean | { id: string; role: string }> => {
+): Promise<false | { id: string; role: string }> => {
   try {
     const result = await pool.query(
       `SELECT * FROM roles WHERE ${valueType} = $1`,

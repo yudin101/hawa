@@ -1,6 +1,6 @@
 export interface User {
   id: number;
-  roleId: number;
+  roleId: string;
   username: string;
   password: string;
   phoneNumber: string;

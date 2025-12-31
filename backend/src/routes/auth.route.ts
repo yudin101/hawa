@@ -15,7 +15,12 @@ import {
 
 const router = Router();
 
-router.use("/register", checkSchema(registerValidation), registerRoutes);
+router.use(
+  "/register",
+  checkSchema(registerValidation),
+  validate,
+  registerRoutes,
+);
 
 router.post("/login", checkSchema(loginValidation), validate, loginUser);
 

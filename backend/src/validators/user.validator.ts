@@ -25,10 +25,10 @@ export const updateUserValidation: Schema = {
     ...registerValidation.password,
     optional: true,
   }, // to prevent forceful password field from registerValidatio
-  confirm_password: {
-    ...registerValidation.confirm_password,
+  confirmPassword: {
+    ...registerValidation.confirmPassword,
     optional: true,
-  }, // to prevent forceful confirm_password field from registerValidation
+  }, // to prevent forceful confirmPassword field from registerValidation
   username: {
     ...registerValidation.username,
     optional: true,
@@ -37,27 +37,27 @@ export const updateUserValidation: Schema = {
     ...registerValidation.email,
     optional: true,
   },
-  new_password: {
+  newPassword: {
     ...registerValidation.password,
     optional: true,
   },
-  confirm_new_password: {
-    ...registerValidation.confirm_password,
+  confirmNewPassword: {
+    ...registerValidation.confirmPassword,
     optional: true,
   },
-  phone_number: {
-    ...registerValidation.phone_number,
+  phoneNumber: {
+    ...registerValidation.phoneNumber,
     optional: true,
   },
-  role_id: {
-    ...registerValidation.role_id,
+  roleId: {
+    ...registerValidation.roleId,
     optional: true,
   },
-  address_id: {
-    ...registerValidation.address_id,
+  addressId: {
+    ...registerValidation.addressId,
     optional: true,
   },
-  confirmation_password: {
+  confirmationPassword: {
     ...loginValidation.password
   },
 };

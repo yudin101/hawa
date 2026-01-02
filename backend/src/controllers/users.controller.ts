@@ -29,14 +29,14 @@ export const updateUser = async (
   try {
     const {
       username,
-      new_password: newPassword,
-      confirm_new_password: confirmNewPassword,
-      phone_number: phoneNumber,
+      newPassword,
+      confirmNewPassword,
+      phoneNumber,
       email,
-      address_id: addressId,
-      confirmation_password: confirmationPassword,
+      addressId,
+      confirmationPassword,
     } = matchedData(req);
-    
+
     const userId: string = req.user?.id as string;
 
     if (!(await findUser("id", userId))) {

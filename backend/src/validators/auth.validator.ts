@@ -44,14 +44,14 @@ export const registerValidation: Schema = {
       errorMessage: "Password must be at least 8 characters",
     },
   },
-  confirm_password: {
+  confirmPassword: {
     in: ["body"],
     isString: {
       errorMessage: "Confirmed password must be a string",
     },
     trim: true,
   },
-  phone_number: {
+  phoneNumber: {
     in: ["body"],
     isString: {
       errorMessage: "Phone number must be a string",
@@ -63,14 +63,14 @@ export const registerValidation: Schema = {
         "Invalid Nepali mobile number format. Must be 10 digits (e.g., 98XXXXXXXX) with optional +977 prefix.",
     },
   },
-  role_id: {
+  roleId: {
     in: ["body"],
     isString: {
       errorMessage: "Role ID must be a string",
     },
     trim: true,
   },
-  address_id: {
+  addressId: {
     in: ["body"],
     isString: {
       errorMessage: "Address ID must be a string",

@@ -21,10 +21,10 @@ export const registerUser = async (
       username,
       email,
       password,
-      confirm_password: confirmPassword,
-      phone_number: phoneNumber,
-      address_id: addressId,
-      role_id: roleId,
+      confirmPassword,
+      phoneNumber,
+      addressId,
+      roleId,
     } = matchedData(req);
 
     if (!(await findRole("id", roleId))) {

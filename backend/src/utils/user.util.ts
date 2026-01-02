@@ -29,7 +29,7 @@ export const removeSensitiveInformation = async (user: User) => {
 };
 
 export const findUser = async (
-  valueType: "username" | "email" | "phone_number",
+  valueType: "id" | "username" | "email" | "phone_number",
   value: string,
 ): Promise<false | User> => {
   try {
@@ -65,6 +65,7 @@ export const fuzzyFindSeller = async (username: string, limit: number = 10) => {
         u.username,
         u.phone_number AS "phoneNumber",
         u.email,
+        a.id,
         a.district,
         a.municipality,
         a.street_name AS "streetName"

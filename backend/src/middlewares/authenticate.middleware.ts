@@ -19,6 +19,7 @@ export const authenticate = (
 
     jwt.verify(accessToken, env.JWT_SECRET, (err, user) => {
       if (err) {
+        console.error(err);
         res.status(403).json({ error: "Forbidden" });
         return;
       }

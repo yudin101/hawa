@@ -1,6 +1,6 @@
 import { Schema } from "express-validator";
 
-const NEPALI_MOBILE_REGEX = /(\+977)?9[6-9]\d{8}/;
+const NEPALI_MOBILE_REGEX = /^(\+977)?9[6-9]\d{8}$/;
 
 export const registerValidation: Schema = {
   username: {
@@ -39,6 +39,10 @@ export const registerValidation: Schema = {
       errorMessage: "Password must be a string",
     },
     trim: true,
+    isLength: {
+      options: { min: 8 },
+      errorMessage: "Password must be at least 8 characters",
+    },
   },
   confirm_password: {
     in: ["body"],

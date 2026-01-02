@@ -3,6 +3,7 @@ import { matchedData } from "express-validator";
 import { findUser, fuzzyFindSeller } from "../utils/user.util";
 import pool from "../config/db";
 import bcrypt from "bcrypt";
+import env from "../config/env";
 
 export const searchUser = async (
   req: Request,
@@ -117,6 +118,45 @@ export const updateUser = async (
       message: "User Updated",
       user: result.rows[0],
     });
+    return;
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { confirmationPassword } = matchedData(req);
+
+    const userId: string = req.user?.id as string;
+
+    if (!(await findUser("id", userId))) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    const existingPasswordHash = (
+      await pool.query(`SELECT password FROM users WHERE id = $1`, [userId])
+    ).rows[0].password;
+
+    if (!(await bcrypt.compare(confirmationPassword, existingPasswordHash))) {
+      res.status(401).json({ error: "Invalid Credentials" });
+      return;
+    }
+
+    await pool.query(`DELETE FROM users WHERE id = $1`, [userId]);
+
+    res.cookie("refresh_token", "", {
+      httpOnly: true,
+      secure: env.NODE_ENV === "production",
+      expires: new Date(0),
+    });
+
+    res.status(200).json({ message: "User Deleted! Logged Out!" });
     return;
   } catch (err) {
     next(err);

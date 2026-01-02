@@ -26,7 +26,7 @@ export const initializeSchema = async (): Promise<void> => {
     const addresses = `
       CREATE TABLE IF NOT EXISTS addresses (
         id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-        district VARCHAR(50) UNIQUE NOT NULL,
+        district VARCHAR(50) NOT NULL,
         municipality VARCHAR(50) NOT NULL,
         street_name VARCHAR(50) NOT NULL
     );`
@@ -46,7 +46,7 @@ export const initializeSchema = async (): Promise<void> => {
     const refreshTokens = `
       CREATE TABLE IF NOT EXISTS refresh_tokens (
         jti VARCHAR(36) PRIMARY KEY,
-        user_id BIGINT NOT NULL REFERENCES users (id),
+        user_id BIGINT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
         expires_at TIMESTAMPTZ NOT NULL,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );`
@@ -58,7 +58,7 @@ export const initializeSchema = async (): Promise<void> => {
         picture_url TEXT NOT NULL,
         body TEXT NOT NULL,
         category_id BIGINT NOT NULL REFERENCES categories (id),
-        user_id BIGINT NOT NULL REFERENCES users (id),
+        user_id BIGINT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
         available_units BIGINT NOT NULL,
         price NUMERIC(10, 2) NOT NULL
     );`
@@ -66,7 +66,7 @@ export const initializeSchema = async (): Promise<void> => {
     const carts = `
       CREATE TABLE IF NOT EXISTS carts (
         id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-        user_id BIGINT NOT NULL REFERENCES users (id),
+        user_id BIGINT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         last_modified TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );`
@@ -74,7 +74,7 @@ export const initializeSchema = async (): Promise<void> => {
     const cartItems = `
       CREATE TABLE IF NOT EXISTS cart_items (
         id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-        cart_id BIGINT NOT NULL REFERENCES carts (id),
+        cart_id BIGINT NOT NULL REFERENCES carts (id) ON DELETE CASCADE,
         product_id BIGINT NOT NULL REFERENCES products (id),
         quantity INTEGER NOT NULL,
         total_price NUMERIC(10, 2) NOT NULL,

@@ -20,15 +20,6 @@ export const searchUserValidation: Schema = {
 };
 
 export const updateUserValidation: Schema = {
-  ...registerValidation,
-  password: {
-    ...registerValidation.password,
-    optional: true,
-  }, // to prevent forceful password field from registerValidatio
-  confirmPassword: {
-    ...registerValidation.confirmPassword,
-    optional: true,
-  }, // to prevent forceful confirmPassword field from registerValidation
   username: {
     ...registerValidation.username,
     optional: true,

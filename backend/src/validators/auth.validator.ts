@@ -5,9 +5,14 @@ const NEPALI_MOBILE_REGEX = /^(\+977)?9[6-9]\d{8}$/;
 export const registerValidation: Schema = {
   username: {
     in: ["body"],
-    trim: true,
     isString: {
       errorMessage: "Username must be a string",
+    },
+    trim: true,
+    toLowerCase: true,
+    matches: {
+      options: /^[a-zA-Z0-9._]+$/,
+      errorMessage: "Username can only contain letters, numbers, dots, and underscores."
     },
     isLength: {
       options: {
@@ -18,11 +23,11 @@ export const registerValidation: Schema = {
   },
   email: {
     in: ["body"],
-    trim: true,
-    normalizeEmail: true,
     isString: {
       errorMessage: "Email must be a string",
     },
+    trim: true,
+    normalizeEmail: true,
     isEmail: {
       errorMessage: "Invalid email format",
     },
@@ -86,6 +91,13 @@ export const loginValidation: Schema = {
       errorMessage: "Username must be a string",
     },
     trim: true,
+    toLowerCase: true,
+    isLength: {
+      options: {
+        max: 50
+      },
+      errorMessage: "Username must be within 50 characters"
+    }
   },
   password: {
     in: ["body"],

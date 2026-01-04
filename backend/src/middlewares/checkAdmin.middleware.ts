@@ -1,16 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-const ADMIN_ROLE_ID = "2"; // better implementation needed
+import { ROLES } from "../constants/roles";
 
-export const checkAdmin = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const checkAdmin = (req: Request, res: Response, next: NextFunction) => {
   if (!req.user) {
     return res.status(401).json({ error: "Authentication required." });
   }
 
-  if (req.user.role === ADMIN_ROLE_ID) {
+  if (req.user.role === ROLES.ADMIN) {
     next();
   } else {
     return res

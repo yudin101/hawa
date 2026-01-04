@@ -22,6 +22,27 @@ export const searchUser = async (
   }
 };
 
+export const getUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { username } = matchedData(req);
+    const result = await findUser("username", username);
+
+    if (!result) {
+      res.status(404).json({ error: "Not Found" });
+      return;
+    }
+
+    res.status(200).json(result);
+    return;
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const updateUser = async (
   req: Request,
   res: Response,

@@ -7,13 +7,16 @@ export interface User {
   email: string;
   addressId: number;
   createdAt: string | Date;
+  district?: string | undefined;
+  municipality?: string | undefined;
+  streetName?: string | undefined;
 }
 
 interface RequestUser {
   id: string;
   role: string;
   iat: number;
-  exp: number
+  exp: number;
 }
 
 declare module "express" {

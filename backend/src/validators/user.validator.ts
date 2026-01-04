@@ -1,14 +1,23 @@
-import { checkSchema, Schema } from "express-validator";
+import { Schema } from "express-validator";
 import { loginValidation, registerValidation } from "./auth.validator";
 
 export const searchUserValidation: Schema = {
   username: {
     in: ["query"],
+    optional: {
+      options: {
+        nullable: true,
+        checkFalsy: true,
+      },
+    },
     isString: true,
     trim: true,
-    escape: true,
-    notEmpty: {
-      errorMessage: "Search term cannot be empty",
+    toLowerCase: true,
+    isLength: {
+      options: {
+        max: 50,
+      },
+      errorMessage: "Search term is too long",
     },
   },
   limit: {
@@ -49,12 +58,27 @@ export const updateUserValidation: Schema = {
     optional: true,
   },
   confirmationPassword: {
-    ...loginValidation.password
+    ...loginValidation.password,
   },
 };
 
 export const deleteUserValidation: Schema = {
   confirmationPassword: {
-    ...updateUserValidation.confirmationPassword
-  }
-}
+    ...updateUserValidation.confirmationPassword,
+  },
+};
+
+export const userWithUsernameValidation: Schema = {
+  username: {
+    in: ["params"],
+    isString: true,
+    trim: true,
+    toLowerCase: true,
+    isLength: {
+      options: {
+        max: 50,
+      },
+      errorMessage: "Username must be within 50 characters",
+    },
+  },
+};

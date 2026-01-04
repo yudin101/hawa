@@ -17,7 +17,7 @@ export const registerUser = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const {
+    let {
       username,
       email,
       password,
@@ -30,6 +30,11 @@ export const registerUser = async (
     if (!(await findRole("id", roleId))) {
       res.status(400).json({ error: "Role does not exist" });
       return;
+    }
+
+    // Removing +977 before sending it to the db
+    if (phoneNumber.slice(0,4) === "+977") {
+      phoneNumber = phoneNumber.slice(4).trim();
     }
 
     if (await findUser("phone_number", phoneNumber)) {

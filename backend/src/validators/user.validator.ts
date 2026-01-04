@@ -49,10 +49,6 @@ export const updateUserValidation: Schema = {
     ...registerValidation.phoneNumber,
     optional: true,
   },
-  roleId: {
-    ...registerValidation.roleId,
-    optional: true,
-  },
   addressId: {
     ...registerValidation.addressId,
     optional: true,

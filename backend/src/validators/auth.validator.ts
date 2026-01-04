@@ -68,13 +68,6 @@ export const registerValidation: Schema = {
         "Invalid Nepali mobile number format. Must be 10 digits (e.g., 98XXXXXXXX) with optional +977 prefix.",
     },
   },
-  roleId: {
-    in: ["body"],
-    isString: {
-      errorMessage: "Role ID must be a string",
-    },
-    trim: true,
-  },
   addressId: {
     in: ["body"],
     isString: {

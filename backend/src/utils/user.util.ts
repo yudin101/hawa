@@ -41,7 +41,7 @@ export const findUser = async (
       a.street_name AS "streetName"
     FROM users u
     INNER JOIN addresses a ON u.address_id = a.id
-    WHERE ${valueType} = $1`,
+    WHERE u.${valueType} = $1`,
     [value],
   );
 

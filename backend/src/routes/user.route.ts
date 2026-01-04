@@ -26,7 +26,7 @@ router.get(
   getUser,
 );
 
-router.post(
+router.patch(
   "/update",
   authenticate,
   checkSchema(updateUserValidation),

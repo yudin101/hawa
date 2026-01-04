@@ -3,83 +3,85 @@ import pool from "../config/db";
 import bcrypt from "bcrypt";
 import { matchedData } from "express-validator";
 import { findUser } from "../utils/user.util";
-import { findRole } from "../utils/role.util";
 import { findAddress } from "../utils/address.util";
 import { User } from "../types/user";
 import { getTokenExipry, getTokenJti } from "../utils/token.util";
 import env from "../config/env";
 import jwt from "jsonwebtoken";
 import { RefreshTokenPayload } from "../types/refreshTokenPayload";
+import { ROLES } from "../constants/roles";
 
-export const registerUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
-  try {
-    let {
-      username,
-      email,
-      password,
-      confirmPassword,
-      phoneNumber,
-      addressId,
-      roleId,
-    } = matchedData(req);
-
-    if (!(await findRole("id", roleId))) {
-      res.status(400).json({ error: "Role does not exist" });
-      return;
-    }
-
-    // Removing +977 before sending it to the db
-    if (phoneNumber.slice(0,4) === "+977") {
-      phoneNumber = phoneNumber.slice(4).trim();
-    }
-
-    if (await findUser("phone_number", phoneNumber)) {
-      res.status(400).json({ error: "Phone number already exists" });
-      return;
-    }
-
-    if (await findUser("email", email)) {
-      res.status(400).json({ error: "Email already exists" });
-      return;
-    }
-
-    if (await findUser("username", username)) {
-      res.status(400).json({ error: "Username already exists" });
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      res.status(400).json({ error: "Password confirmation does not match" });
-      return;
-    }
-
-    if (!(await findAddress(addressId))) {
-      res.status(400).json({ error: "Address does not exist" });
-      return;
-    }
-
-    await pool.query(
-      `INSERT INTO users (username, email, password, phone_number, address_id, role_id)
-      VALUES ($1, $2, $3, $4, $5, $6)`,
-      [
+export const registerUser = (roleId: (typeof ROLES)[keyof typeof ROLES]) => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      let {
         username,
         email,
-        await bcrypt.hash(password, 10),
+        password,
+        confirmPassword,
         phoneNumber,
         addressId,
-        roleId,
-      ],
-    );
+      } = matchedData(req);
 
-    res.status(400).json({ message: "Registered Successfully" });
-    return;
-  } catch (err) {
-    next(err);
-  }
+      // Removing +977 before sending it to the db
+      if (phoneNumber.slice(0, 4) === "+977") {
+        phoneNumber = phoneNumber.slice(4).trim();
+      }
+
+      if (await findUser("phone_number", phoneNumber)) {
+        res.status(400).json({ error: "Phone number already exists" });
+        return;
+      }
+
+      if (await findUser("email", email)) {
+        res.status(400).json({ error: "Email already exists" });
+        return;
+      }
+
+      if (await findUser("username", username)) {
+        res.status(400).json({ error: "Username already exists" });
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        res.status(400).json({ error: "Password confirmation does not match" });
+        return;
+      }
+
+      if (!(await findAddress(addressId))) {
+        res.status(400).json({ error: "Address does not exist" });
+        return;
+      }
+
+      await pool.query(
+        `INSERT INTO users (
+        username,
+        email,
+        password,
+        phone_number,
+        address_id,
+        role_id
+      ) VALUES ($1, $2, $3, $4, $5, $6)`,
+        [
+          username,
+          email,
+          await bcrypt.hash(password, 10),
+          phoneNumber,
+          addressId,
+          roleId,
+        ],
+      );
+
+      res.status(400).json({ message: "Registered Successfully" });
+      return;
+    } catch (err) {
+      next(err);
+    }
+  };
 };
 
 export const loginUser = async (

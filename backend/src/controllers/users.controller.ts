@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { matchedData } from "express-validator";
-import { compareHash, findUser, fuzzyFindSeller } from "../utils/user.util";
+import { compareHash, findUser, fuzzyFindSeller } from "../services/user.service";
 import pool from "../config/db";
 import bcrypt from "bcrypt";
 import env from "../config/env";

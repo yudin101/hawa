@@ -3,26 +3,24 @@ import { ROLES } from "../constants/roles";
 import { User } from "../types/user";
 import bcrypt from "bcrypt";
 
-export const removeSensitiveInformation = async (user: User) => {
+export const sanitizeUser = (user: User) => {
   let cleanedUser = {
     id: user.id,
     roleId: user.roleId,
     username: user.username,
   } as User;
 
-  if (user.roleId === ROLES.SELLER) {
-    cleanedUser = {
-      ...cleanedUser,
-      phoneNumber: user.phoneNumber,
-      email: user.email,
-      addressId: user.addressId,
-      district: user.district,
-      municipality: user.municipality,
-      streetName: user.streetName,
-    };
-  }
+  if (user.roleId !== ROLES.SELLER) return cleanedUser;
 
-  return cleanedUser;
+  return {
+    ...cleanedUser,
+    phoneNumber: user.phoneNumber,
+    email: user.email,
+    addressId: user.addressId,
+    district: user.district,
+    municipality: user.municipality,
+    streetName: user.streetName,
+  };
 };
 
 export const findUser = async (
@@ -47,7 +45,7 @@ export const findUser = async (
   );
 
   if (result.rows.length === 1) {
-    return await removeSensitiveInformation(result.rows[0]);
+    return sanitizeUser(result.rows[0]);
   }
   return false;
 };

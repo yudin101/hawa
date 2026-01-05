@@ -9,9 +9,9 @@ import { getTokenExipry, getTokenJti } from "../utils/token.util";
 import env from "../config/env";
 import jwt from "jsonwebtoken";
 import { RefreshTokenPayload } from "../types/refreshTokenPayload";
-import { ROLES } from "../constants/roles";
+import { RoleIdType } from "../constants/roles";
 
-export const registerUser = (roleId: (typeof ROLES)[keyof typeof ROLES]) => {
+export const registerUser = (roleId: RoleIdType) => {
   return async (
     req: Request,
     res: Response,
@@ -32,18 +32,18 @@ export const registerUser = (roleId: (typeof ROLES)[keyof typeof ROLES]) => {
         phoneNumber = phoneNumber.slice(4).trim();
       }
 
-      if (await findUser("phone_number", phoneNumber)) {
-        res.status(400).json({ error: "Phone number already exists" });
+      if (await findUser("username", username)) {
+        res.status(409).json({ error: "Username already exists" });
         return;
       }
 
       if (await findUser("email", email)) {
-        res.status(400).json({ error: "Email already exists" });
+        res.status(409).json({ error: "Email already exists" });
         return;
       }
 
-      if (await findUser("username", username)) {
-        res.status(400).json({ error: "Username already exists" });
+      if (await findUser("phone_number", phoneNumber)) {
+        res.status(409).json({ error: "Phone number already exists" });
         return;
       }
 
@@ -53,7 +53,7 @@ export const registerUser = (roleId: (typeof ROLES)[keyof typeof ROLES]) => {
       }
 
       if (!(await findAddress(addressId))) {
-        res.status(400).json({ error: "Address does not exist" });
+        res.status(404).json({ error: "Address does not exist" });
         return;
       }
 

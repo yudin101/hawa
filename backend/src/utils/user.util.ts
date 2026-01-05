@@ -1,6 +1,7 @@
 import pool from "../config/db";
 import { ROLES } from "../constants/roles";
 import { User } from "../types/user";
+import bcrypt from "bcrypt";
 
 export const removeSensitiveInformation = async (user: User) => {
   let cleanedUser = {
@@ -17,7 +18,7 @@ export const removeSensitiveInformation = async (user: User) => {
       addressId: user.addressId,
       district: user.district,
       municipality: user.municipality,
-      streetName: user.streetName
+      streetName: user.streetName,
     };
   }
 
@@ -71,4 +72,19 @@ export const fuzzyFindSeller = async (username: string, limit: number = 10) => {
     [searchTerm, ROLES.SELLER, limit],
   );
   return result.rows;
+};
+
+export const compareHash = async (
+  plainPassword: string,
+  userId: string,
+): Promise<boolean> => {
+  const existingPasswordHash = (
+    await pool.query(`SELECT password FROM users WHERE id = $1`, [userId])
+  ).rows[0].password;
+
+  if (!(await bcrypt.compare(plainPassword, existingPasswordHash))) {
+    return false;
+  }
+
+  return true;
 };

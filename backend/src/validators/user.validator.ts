@@ -58,9 +58,15 @@ export const updateUserValidation: Schema = {
   },
 };
 
-export const deleteUserValidation: Schema = {
+export const changeUserTypeValidation: Schema = {
   confirmationPassword: {
     ...updateUserValidation.confirmationPassword,
+  },
+};
+
+export const deleteUserValidation: Schema = {
+  confirmationPassword: {
+    ...changeUserTypeValidation.confirmationPassword,
   },
 };
 

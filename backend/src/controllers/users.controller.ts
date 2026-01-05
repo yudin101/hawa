@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { matchedData } from "express-validator";
-import { findUser, fuzzyFindSeller } from "../utils/user.util";
+import { compareHash, findUser, fuzzyFindSeller } from "../utils/user.util";
 import pool from "../config/db";
 import bcrypt from "bcrypt";
 import env from "../config/env";
@@ -145,6 +145,58 @@ export const updateUser = async (
   }
 };
 
+export const changeUserType = (roleIdToConvert: string) => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const { confirmationPassword } = matchedData(req);
+
+      const userId: string = req.user?.id as string;
+      const currentRoleId: string = req.user?.role as string;
+
+      if (!(await findUser("id", userId))) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+
+      if (!(await compareHash(confirmationPassword, userId))) {
+        res.status(401).json({ error: "Invalid Credentials" });
+        return;
+      }
+
+      if (currentRoleId === roleIdToConvert) {
+        res.status(409).json({ error: "User already of the desired type" });
+        return;
+      }
+
+      const result = await pool.query(
+        `UPDATE users
+        SET role_id = $1 
+        WHERE id = $2
+        RETURNING
+          id,
+          role_id AS "roleId",
+          username,
+          email,
+          phone_number AS "phoneNumber",
+          address_id AS "addressId"`,
+        [roleIdToConvert, userId],
+      );
+
+      res.status(200).json({
+        message: "User type changed",
+        user: result.rows[0],
+      });
+      return;
+    } catch (err) {
+      next(err);
+    }
+  };
+};
+
 export const deleteUser = async (
   req: Request,
   res: Response,
@@ -160,11 +212,7 @@ export const deleteUser = async (
       return;
     }
 
-    const existingPasswordHash = (
-      await pool.query(`SELECT password FROM users WHERE id = $1`, [userId])
-    ).rows[0].password;
-
-    if (!(await bcrypt.compare(confirmationPassword, existingPasswordHash))) {
+    if (!(await compareHash(confirmationPassword, userId))) {
       res.status(401).json({ error: "Invalid Credentials" });
       return;
     }

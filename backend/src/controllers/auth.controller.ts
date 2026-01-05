@@ -153,7 +153,7 @@ export const refreshToken = async (
   next: NextFunction,
 ) => {
   try {
-    const refreshToken = req.body.token;
+    const { refresh_token: refreshToken } = matchedData(req);
 
     if (refreshToken === undefined) {
       res.status(401).json({ error: "Unauthorized" });
@@ -206,7 +206,7 @@ export const logoutUser = async (
   next: NextFunction,
 ) => {
   try {
-    const refreshToken = req.cookies.refresh_token;
+    const { refresh_token: refreshToken } = matchedData(req);
 
     if (!refreshToken) {
       res.status(200).json({ error: "No active session." });

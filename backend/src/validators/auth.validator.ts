@@ -12,7 +12,8 @@ export const registerValidation: Schema = {
     toLowerCase: true,
     matches: {
       options: /^[a-zA-Z0-9._]+$/,
-      errorMessage: "Username can only contain letters, numbers, dots, and underscores."
+      errorMessage:
+        "Username can only contain letters, numbers, dots, and underscores.",
     },
     isLength: {
       options: {
@@ -87,10 +88,10 @@ export const loginValidation: Schema = {
     toLowerCase: true,
     isLength: {
       options: {
-        max: 50
+        max: 50,
       },
-      errorMessage: "Username must be within 50 characters"
-    }
+      errorMessage: "Username must be within 50 characters",
+    },
   },
   password: {
     in: ["body"],
@@ -98,5 +99,21 @@ export const loginValidation: Schema = {
       errorMessage: "Password must be a string",
     },
     trim: true,
+  },
+};
+
+export const refreshTokenValidation: Schema = {
+  refresh_token: {
+    in: ["cookies"],
+    exists: {
+      errorMessage: "Refresh token is missing",
+    },
+    isString: {
+      errorMessage: "Refresh token must be a string",
+    },
+    trim: true,
+    notEmpty: {
+      errorMessage: "Refresh token cannot be empty",
+    },
   },
 };

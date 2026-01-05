@@ -4,6 +4,7 @@ import { checkSchema } from "express-validator";
 import {
   loginValidation,
   registerValidation,
+  refreshTokenValidation,
 } from "../validators/auth.validator";
 import { validate } from "../middlewares/validation.middleware";
 import { authenticate } from "../middlewares/authenticate.middleware";
@@ -24,8 +25,13 @@ router.use(
 
 router.post("/login", checkSchema(loginValidation), validate, loginUser);
 
-router.post("/refresh", refreshToken);
+router.post("/refresh", checkSchema(refreshTokenValidation), refreshToken);
 
-router.post("/logout", authenticate, logoutUser);
+router.post(
+  "/logout",
+  checkSchema(refreshTokenValidation),
+  authenticate,
+  logoutUser,
+);
 
 export default router;

@@ -1,5 +1,15 @@
 import jwt from "jsonwebtoken";
 import pool from "../config/db";
+import { env } from "process";
+import { AccessTokenPayload, RefreshTokenPayload } from "../types/token";
+
+export const generateAccessToken = (accessPayload: AccessTokenPayload) => {
+  return jwt.sign(accessPayload, env.JWT_SECRET, { expiresIn: "15m" });
+};
+
+export const generateRefreshToken = (refreshPayload: RefreshTokenPayload) => {
+  return jwt.sign(refreshPayload, env.JWT_REFRESH_SECRET, { expiresIn: "30d" });
+};
 
 export const addRefreshToken = async (
   refreshPayload: { id: string; jti: string },
@@ -10,6 +20,15 @@ export const addRefreshToken = async (
       VALUES ($1, $2, $3)`,
     [refreshPayload.jti, refreshPayload.id, expiresAt],
   );
+};
+
+export const verifyRefreshToken = (
+  refreshToken: string,
+): RefreshTokenPayload => {
+  return jwt.verify(
+    refreshToken,
+    env.JWT_REFRESH_SECRET,
+  ) as RefreshTokenPayload;
 };
 
 export const getRefreshTokenByJti = async (jti: string) => {

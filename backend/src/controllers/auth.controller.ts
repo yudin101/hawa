@@ -5,13 +5,14 @@ import { findAddress } from "../services/address.service";
 import {
   addRefreshToken,
   deleteRefreshTokenByJti,
+  generateAccessToken,
+  generateRefreshToken,
   getRefreshTokenByJti,
   getTokenExipry,
   getTokenJti,
+  verifyRefreshToken,
 } from "../services/token.service";
 import env from "../config/env";
-import jwt from "jsonwebtoken";
-import { RefreshTokenPayload } from "../types/refreshTokenPayload";
 import { RoleIdType } from "../constants/roles";
 
 export const registerUser = (roleId: RoleIdType) => {
@@ -94,16 +95,15 @@ export const loginUser = async (
       return;
     }
 
-    const accessPayload = { id: user.id, role: user.roleId };
-    const refreshPayload = { id: user.id, jti: crypto.randomUUID() };
+    const accessPayload = { id: user.id, roleId: user.roleId };
+    const refreshPayload = {
+      id: user.id,
+      roleId: user.roleId,
+      jti: crypto.randomUUID(),
+    };
 
-    const accessToken = jwt.sign(accessPayload, env.JWT_SECRET, {
-      expiresIn: "15m",
-    });
-
-    const refreshToken = jwt.sign(refreshPayload, env.JWT_REFRESH_SECRET, {
-      expiresIn: "30d",
-    });
+    const accessToken = generateAccessToken(accessPayload);
+    const refreshToken = generateRefreshToken(refreshPayload);
 
     const expiresAt = getTokenExipry(refreshToken);
 
@@ -156,16 +156,12 @@ export const refreshToken = async (
     }
 
     try {
-      const decodedUser = jwt.verify(
-        refreshToken,
-        env.JWT_REFRESH_SECRET,
-      ) as RefreshTokenPayload;
+      const decodedUser = verifyRefreshToken(refreshToken);
 
-      const accessToken = jwt.sign(
-        { id: decodedUser.id, role: decodedUser.roleId },
-        env.JWT_SECRET,
-        { expiresIn: "15m" },
-      );
+      const accessToken = generateAccessToken({
+        id: decodedUser.id,
+        roleId: decodedUser.roleId,
+      });
 
       res.status(200).json({ accessToken: accessToken });
       return;

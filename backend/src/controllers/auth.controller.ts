@@ -1,11 +1,14 @@
 import { Request, Response, NextFunction } from "express";
-import pool from "../config/db";
-import bcrypt from "bcrypt";
 import { matchedData } from "express-validator";
-import { findUser } from "../services/user.service";
+import { createUser, compareHash, findUser } from "../services/user.service";
 import { findAddress } from "../services/address.service";
-import { User } from "../types/user";
-import { getTokenExipry, getTokenJti } from "../services/token.service";
+import {
+  addRefreshToken,
+  deleteRefreshTokenByJti,
+  getRefreshTokenByJti,
+  getTokenExipry,
+  getTokenJti,
+} from "../services/token.service";
 import env from "../config/env";
 import jwt from "jsonwebtoken";
 import { RefreshTokenPayload } from "../types/refreshTokenPayload";
@@ -57,26 +60,18 @@ export const registerUser = (roleId: RoleIdType) => {
         return;
       }
 
-      await pool.query(
-        `INSERT INTO users (
+      const registeredUser = await createUser({
         username,
         email,
         password,
-        phone_number,
-        address_id,
-        role_id
-      ) VALUES ($1, $2, $3, $4, $5, $6)`,
-        [
-          username,
-          email,
-          await bcrypt.hash(password, 10),
-          phoneNumber,
-          addressId,
-          roleId,
-        ],
-      );
+        phoneNumber,
+        addressId,
+        roleId,
+      });
 
-      res.status(400).json({ message: "Registered Successfully" });
+      res
+        .status(201)
+        .json({ message: "Registered Successfully", user: registeredUser });
       return;
     } catch (err) {
       next(err);
@@ -92,20 +87,9 @@ export const loginUser = async (
   const { username, password } = matchedData(req);
 
   try {
-    const userCheck = await pool.query(
-      `SELECT
-        id,
-        role_id AS "roleId",
-        username,
-        password
-      FROM users
-      WHERE username = $1`,
-      [username],
-    );
+    const user = await findUser("username", username);
 
-    const user = userCheck.rows[0] as User;
-
-    if (!user || !(await bcrypt.compare(password, user["password"]))) {
+    if (!user || !(await compareHash(password, user.id))) {
       res.status(401).json({ error: "Invalid Credentials" });
       return;
     }
@@ -128,10 +112,7 @@ export const loginUser = async (
       return;
     }
 
-    pool.query(
-      `INSERT INTO refresh_tokens (jti, user_id, expires_at) VALUES ($1, $2, $3)`,
-      [refreshPayload.jti, refreshPayload.id, expiresAt],
-    );
+    await addRefreshToken(refreshPayload, expiresAt);
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
@@ -167,12 +148,9 @@ export const refreshToken = async (
       return;
     }
 
-    const jtiCheck = await pool.query(
-      `SELECT * FROM refresh_tokens WHERE jti = $1`,
-      [jti],
-    );
+    const storedToken = await getRefreshTokenByJti(jti);
 
-    if (jtiCheck.rows.length === 0) {
+    if (!storedToken) {
       res.status(403).json({ error: "Session Expired! Please log in again." });
       return;
     }
@@ -219,12 +197,9 @@ export const logoutUser = async (
       console.warn("Attempted logout with malformed token.");
     } else {
       try {
-        const result = await pool.query(
-          `DELETE FROM refresh_tokens WHERE jti = $1`,
-          [jti],
-        );
+        const isTokenDeleted = await deleteRefreshTokenByJti(jti);
 
-        if (result.rowCount === 0) {
+        if (!isTokenDeleted) {
           console.warn("Logout attempt for non-existent JTI:", jti);
         }
       } catch (err) {
@@ -239,6 +214,7 @@ export const logoutUser = async (
     });
 
     res.status(200).json({ message: "Logout successful." });
+    return;
   } catch (err) {
     console.error("Error registering user: ");
     next(err);

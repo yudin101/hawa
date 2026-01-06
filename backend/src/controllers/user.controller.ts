@@ -1,7 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { matchedData } from "express-validator";
-import { compareHash, findUser, fuzzyFindSeller } from "../services/user.service";
-import pool from "../config/db";
+import {
+  compareHash,
+  extractExistingHash,
+  findUser,
+  fuzzyFindSeller,
+  removeUserById,
+  updateUserInfo,
+  updateUserRole,
+} from "../services/user.service";
 import bcrypt from "bcrypt";
 import env from "../config/env";
 
@@ -66,9 +73,7 @@ export const updateUser = async (
       return;
     }
 
-    const existingPasswordHash = (
-      await pool.query(`SELECT password FROM users WHERE id = $1`, [userId])
-    ).rows[0].password;
+    const existingPasswordHash = await extractExistingHash(userId);
 
     if (!(await bcrypt.compare(confirmationPassword, existingPasswordHash))) {
       res.status(401).json({ error: "Invalid Credentials" });
@@ -121,23 +126,11 @@ export const updateUser = async (
       return;
     }
 
-    const query = `
-      UPDATE users
-      SET 
-        ${setClauses.join(", ")}
-      WHERE id = $1
-      RETURNING 
-        id, 
-        username, 
-        email, 
-        phone_number AS "phoneNumber", 
-        address_id AS "addressId"`;
-
-    const result = await pool.query(query, queryValues);
+    const updatedUser = await updateUserInfo(setClauses, queryValues);
 
     res.status(200).json({
       message: "User Updated",
-      user: result.rows[0],
+      user: updatedUser,
     });
     return;
   } catch (err) {
@@ -152,12 +145,15 @@ export const changeUserType = (roleIdToConvert: string) => {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const { confirmationPassword } = matchedData(req);
+      const { directUserId, confirmationPassword } = matchedData(req);
 
       const userId: string = req.user?.id as string;
       const currentRoleId: string = req.user?.role as string;
 
-      if (!(await findUser("id", userId))) {
+      if (
+        !(await findUser("id", userId)) ||
+        (directUserId && !(await findUser("id", directUserId)))
+      ) {
         res.status(404).json({ error: "User not found" });
         return;
       }
@@ -167,28 +163,17 @@ export const changeUserType = (roleIdToConvert: string) => {
         return;
       }
 
-      if (currentRoleId === roleIdToConvert) {
+      if (!directUserId && currentRoleId === roleIdToConvert) {
         res.status(409).json({ error: "User already of the desired type" });
         return;
       }
 
-      const result = await pool.query(
-        `UPDATE users
-        SET role_id = $1 
-        WHERE id = $2
-        RETURNING
-          id,
-          role_id AS "roleId",
-          username,
-          email,
-          phone_number AS "phoneNumber",
-          address_id AS "addressId"`,
-        [roleIdToConvert, userId],
-      );
+      const targetUserId = directUserId ?? userId;
+      const updatedUser = await updateUserRole(roleIdToConvert, targetUserId);
 
       res.status(200).json({
         message: "User type changed",
-        user: result.rows[0],
+        user: updatedUser,
       });
       return;
     } catch (err) {
@@ -217,7 +202,7 @@ export const deleteUser = async (
       return;
     }
 
-    await pool.query(`DELETE FROM users WHERE id = $1`, [userId]);
+    removeUserById(userId);
 
     res.cookie("refresh_token", "", {
       httpOnly: true,

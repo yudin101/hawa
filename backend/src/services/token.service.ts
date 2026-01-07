@@ -8,16 +8,24 @@ export const generateAccessToken = (accessPayload: AccessTokenPayload) => {
 };
 
 export const generateRefreshToken = (refreshPayload: RefreshTokenPayload) => {
-  return jwt.sign(refreshPayload, env.JWT_REFRESH_SECRET, { expiresIn: "30d" });
+  const expiresInSeconds = 30 * 24 * 60 * 60;
+
+  const refreshToken = jwt.sign(refreshPayload, env.JWT_REFRESH_SECRET, {
+    expiresIn: expiresInSeconds,
+  });
+
+  const expiresAt = new Date(Date.now() + 1000);
+
+  return { refreshToken, expiresAt };
 };
 
-export const addRefreshToken = async (
+export const addRefreshTokenRecord = async (
   refreshPayload: { id: string; jti: string },
   expiresAt: Date,
 ) => {
   await pool.query(
     `INSERT INTO refresh_tokens (jti, user_id, expires_at) 
-      VALUES ($1, $2, $3)`,
+    VALUES ($1, $2, $3)`,
     [refreshPayload.jti, refreshPayload.id, expiresAt],
   );
 };
@@ -31,7 +39,7 @@ export const verifyRefreshToken = (
   ) as RefreshTokenPayload;
 };
 
-export const getRefreshTokenByJti = async (jti: string) => {
+export const findStoredToken = async (jti: string) => {
   const result = await pool.query(
     `SELECT * FROM refresh_tokens WHERE jti = $1`,
     [jti],
@@ -39,42 +47,36 @@ export const getRefreshTokenByJti = async (jti: string) => {
   return result.rows[0];
 };
 
-export const deleteRefreshTokenByJti = async (jti: string) => {
+export const revokeRefreshTokenRecord = async (jti: string) => {
   const result = await pool.query(`DELETE FROM refresh_tokens WHERE jti = $1`, [
     jti,
   ]);
   return (result.rowCount ?? 0) > 0;
 };
 
-export const getTokenExipry = (token: string): Date | undefined => {
-  const decodedPayload = jwt.decode(token);
+export const replaceRefreshTokenRecord = async (
+  jti: string,
+  refreshPayload: RefreshTokenPayload,
+  expiresAt: Date,
+) => {
+  const client = await pool.connect();
 
-  if (
-    decodedPayload &&
-    typeof decodedPayload === "object" &&
-    "exp" in decodedPayload
-  ) {
-    const expTimestamp = decodedPayload.exp;
+  try {
+    await client.query(`BEGIN`);
 
-    if (expTimestamp) {
-      const expiryDate = new Date(expTimestamp * 1000);
-      return expiryDate;
-    }
+    await client.query(`DELETE FROM refresh_tokens WHERE jti = $1`, [jti]);
+
+    await client.query(
+      `INSERT INTO refresh_tokens (jti, user_id, expires_at)
+      VALUES ($1, $2, $3)`,
+      [refreshPayload.jti, refreshPayload.id, expiresAt],
+    );
+
+    await client.query(`COMMIT`);
+  } catch (err) {
+    await client.query(`ROLLBACK`);
+    throw err;
+  } finally {
+    client.release();
   }
-
-  return undefined;
-};
-
-export const getTokenJti = (token: string): string | undefined => {
-  const decodedPayload = jwt.decode(token);
-
-  if (
-    decodedPayload &&
-    typeof decodedPayload === "object" &&
-    "jti" in decodedPayload
-  ) {
-    return decodedPayload.jti as string;
-  }
-
-  return undefined;
 };

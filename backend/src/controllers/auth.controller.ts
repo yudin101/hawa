@@ -3,13 +3,12 @@ import { matchedData } from "express-validator";
 import { createUser, compareHash, findUser } from "../services/user.service";
 import { findAddress } from "../services/address.service";
 import {
-  addRefreshToken,
-  deleteRefreshTokenByJti,
+  addRefreshTokenRecord,
+  findStoredToken,
   generateAccessToken,
   generateRefreshToken,
-  getRefreshTokenByJti,
-  getTokenExipry,
-  getTokenJti,
+  replaceRefreshTokenRecord,
+  revokeRefreshTokenRecord,
   verifyRefreshToken,
 } from "../services/token.service";
 import env from "../config/env";
@@ -103,16 +102,9 @@ export const loginUser = async (
     };
 
     const accessToken = generateAccessToken(accessPayload);
-    const refreshToken = generateRefreshToken(refreshPayload);
+    const { refreshToken, expiresAt } = generateRefreshToken(refreshPayload);
 
-    const expiresAt = getTokenExipry(refreshToken);
-
-    if (!expiresAt) {
-      res.status(500).json({ error: "Internal Server Error" });
-      return;
-    }
-
-    await addRefreshToken(refreshPayload, expiresAt);
+    await addRefreshTokenRecord(refreshPayload, expiresAt);
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
@@ -141,26 +133,39 @@ export const refreshToken = async (
       return;
     }
 
-    const jti = getTokenJti(refreshToken);
-
-    if (!jti) {
-      res.status(401).json({ error: "Invalid Refresh Token Format!" });
-      return;
-    }
-
-    const storedToken = await getRefreshTokenByJti(jti);
-
-    if (!storedToken) {
-      res.status(403).json({ error: "Session Expired! Please log in again." });
-      return;
-    }
-
     try {
-      const decodedUser = verifyRefreshToken(refreshToken);
+      const decoded = verifyRefreshToken(refreshToken);
 
-      const accessToken = generateAccessToken({
-        id: decodedUser.id,
-        roleId: decodedUser.roleId,
+      const storedToken = await findStoredToken(decoded.jti);
+
+      if (!storedToken) {
+        res
+          .status(403)
+          .json({ error: "Session Expired! Please log in again." });
+        return;
+      }
+
+      const accessPayload = {
+        id: decoded.id,
+        roleId: decoded.roleId,
+      };
+
+      const refreshPayload = {
+        ...accessPayload,
+        jti: crypto.randomUUID(),
+      };
+
+      const accessToken = generateAccessToken(accessPayload);
+      const { refreshToken: newRefreshToken, expiresAt } =
+        generateRefreshToken(refreshPayload);
+
+      await replaceRefreshTokenRecord(decoded.jti, refreshPayload, expiresAt);
+
+      res.cookie("refresh_token", newRefreshToken, {
+        httpOnly: true,
+        secure: env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 30 * 24 * 60 * 1000,
       });
 
       res.status(200).json({ accessToken: accessToken });
@@ -187,16 +192,16 @@ export const logoutUser = async (
       return;
     }
 
-    const jti = getTokenJti(refreshToken);
+    const decoded = verifyRefreshToken(refreshToken);
 
-    if (!jti) {
+    if (!decoded.jti) {
       console.warn("Attempted logout with malformed token.");
     } else {
       try {
-        const isTokenDeleted = await deleteRefreshTokenByJti(jti);
+        const isTokenRevoked = await revokeRefreshTokenRecord(decoded.jti);
 
-        if (!isTokenDeleted) {
-          console.warn("Logout attempt for non-existent JTI:", jti);
+        if (!isTokenRevoked) {
+          console.warn("Logout attempt for non-existent JTI:", decoded.jti);
         }
       } catch (err) {
         console.error("Database error during logout revocation:", err);
@@ -212,7 +217,6 @@ export const logoutUser = async (
     res.status(200).json({ message: "Logout successful." });
     return;
   } catch (err) {
-    console.error("Error registering user: ");
     next(err);
   }
 };

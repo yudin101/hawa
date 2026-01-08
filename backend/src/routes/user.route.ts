@@ -17,7 +17,7 @@ import {
 import { validate } from "../middlewares/validation.middleware";
 import { authenticate } from "../middlewares/authenticate.middleware";
 import { ROLES } from "../constants/roles";
-import { checkAdmin } from "../middlewares/checkAdmin.middleware";
+import { checkRole } from "../middlewares/checkRole.middleware";
 
 const router = Router();
 
@@ -41,7 +41,7 @@ router.patch(
 router.patch(
   "/upgrade/admin",
   authenticate,
-  checkAdmin,
+  checkRole(ROLES.ADMIN),
   checkSchema(changeUserTypeValidation),
   validate,
   changeUserType(ROLES.ADMIN),

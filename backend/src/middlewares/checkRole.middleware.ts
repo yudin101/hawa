@@ -6,7 +6,7 @@ export const checkRole = (roleId: string) => {
       return res.status(401).json({ error: "Authentication required." });
     }
 
-    if (req.user.role === roleId) {
+    if (req.user.roleId === roleId) {
       next();
     } else {
       return res

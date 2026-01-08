@@ -3,7 +3,6 @@ import registerRoutes from "./register.route";
 import { checkSchema } from "express-validator";
 import {
   loginValidation,
-  registerValidation,
   refreshTokenValidation,
 } from "../validators/auth.validator";
 import { validate } from "../middlewares/validation.middleware";
@@ -18,8 +17,6 @@ const router = Router();
 
 router.use(
   "/register",
-  checkSchema(registerValidation),
-  validate,
   registerRoutes,
 );
 
@@ -29,8 +26,9 @@ router.post("/refresh", checkSchema(refreshTokenValidation), refreshToken);
 
 router.post(
   "/logout",
-  checkSchema(refreshTokenValidation),
   authenticate,
+  checkSchema(refreshTokenValidation),
+  validate,
   logoutUser,
 );
 

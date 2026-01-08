@@ -14,7 +14,7 @@ export interface User {
 
 interface RequestUser {
   id: string;
-  role: string;
+  roleId: string;
   iat: number;
   exp: number;
 }

@@ -62,6 +62,14 @@ export const changeUserTypeValidation: Schema = {
   confirmationPassword: {
     ...updateUserValidation.confirmationPassword,
   },
+  directUserId: {
+    in: ["body"],
+    optional: true,
+    isString: {
+      errorMessage: "Direct User Id must be a string",
+    },
+    trim: true,
+  },
 };
 
 export const deleteUserValidation: Schema = {

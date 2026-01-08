@@ -148,7 +148,7 @@ export const changeUserType = (roleIdToConvert: string) => {
       const { directUserId, confirmationPassword } = matchedData(req);
 
       const userId: string = req.user?.id as string;
-      const currentRoleId: string = req.user?.role as string;
+      const currentRoleId: string = req.user?.roleId as string;
 
       if (
         !(await findUser("id", userId)) ||

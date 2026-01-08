@@ -14,7 +14,7 @@ export const generateRefreshToken = (refreshPayload: RefreshTokenPayload) => {
     expiresIn: expiresInSeconds,
   });
 
-  const expiresAt = new Date(Date.now() + 1000);
+  const expiresAt = new Date(Date.now() + expiresInSeconds * 1000);
 
   return { refreshToken, expiresAt };
 };

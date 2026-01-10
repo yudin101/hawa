@@ -1,6 +1,6 @@
 import { Schema } from "express-validator";
 
-const NEPALI_MOBILE_REGEX = /^(\+977)?9[6-9]\d{8}$/;
+const NEPALI_MOBILE_REGEX = /^(\+977|977)?\s?9[6-9]\d{8}$/;
 
 export const registerValidation: Schema = {
   username: {
@@ -75,6 +75,11 @@ export const registerValidation: Schema = {
       options: [NEPALI_MOBILE_REGEX],
       errorMessage:
         "Invalid Nepali mobile number format. Must be 10 digits (e.g., 98XXXXXXXX) with optional +977 prefix.",
+    },
+    customSanitizer: {
+      options: (value: string) => {
+        return value.replace(/^(\+977|977)\s*/, "");
+      },
     },
   },
   addressId: {

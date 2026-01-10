@@ -39,7 +39,7 @@ export const getUser = catchAsync(async (req: Request, res: Response) => {
 
 export const updateUser = catchAsync(
   async (req: Request, res: Response): Promise<void> => {
-    const {
+    let {
       id: requestUserId,
       username,
       newPassword,

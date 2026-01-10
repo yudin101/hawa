@@ -20,11 +20,6 @@ export const registerUser = (roleId: RoleIdType) => {
     let { username, email, password, phoneNumber, addressId } =
       matchedData(req);
 
-    // Removing +977 before sending it to the db
-    if (phoneNumber.slice(0, 4) === "+977") {
-      phoneNumber = phoneNumber.slice(4).trim();
-    }
-
     if (await findUser("username", username)) {
       res.status(409).json({ error: "Username already exists" });
       return;

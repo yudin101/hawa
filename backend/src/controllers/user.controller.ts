@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { matchedData } from "express-validator";
 import {
   compareHash,
@@ -11,51 +11,34 @@ import {
 } from "../services/user.service";
 import bcrypt from "bcrypt";
 import env from "../config/env";
+import { catchAsync } from "../utils/catchAsync.util";
 
-export const searchUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
-  try {
+export const searchUser = catchAsync(
+  async (req: Request, res: Response): Promise<void> => {
     const { username, limit } = matchedData(req);
 
     const searchResults = await fuzzyFindSeller(username, limit);
 
     res.status(200).json(searchResults);
     return;
-  } catch (err) {
-    next(err);
-  }
-};
+  },
+);
 
-export const getUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const { username } = matchedData(req);
-    const result = await findUser("username", username);
+export const getUser = catchAsync(async (req: Request, res: Response) => {
+  const { username } = matchedData(req);
+  const result = await findUser("username", username);
 
-    if (!result) {
-      res.status(404).json({ error: "Not Found" });
-      return;
-    }
-
-    res.status(200).json(result);
+  if (!result) {
+    res.status(404).json({ error: "Not Found" });
     return;
-  } catch (err) {
-    next(err);
   }
-};
 
-export const updateUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
-  try {
+  res.status(200).json(result);
+  return;
+});
+
+export const updateUser = catchAsync(
+  async (req: Request, res: Response): Promise<void> => {
     const {
       username,
       newPassword,
@@ -133,61 +116,47 @@ export const updateUser = async (
       user: updatedUser,
     });
     return;
-  } catch (err) {
-    next(err);
-  }
-};
+  },
+);
 
 export const changeUserType = (roleIdToConvert: string) => {
-  return async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> => {
-    try {
-      const { directUserId, confirmationPassword } = matchedData(req);
+  return catchAsync(async (req: Request, res: Response): Promise<void> => {
+    const { directUserId, confirmationPassword } = matchedData(req);
 
-      const userId: string = req.user?.id as string;
-      const currentRoleId: string = req.user?.roleId as string;
+    const userId: string = req.user?.id as string;
+    const currentRoleId: string = req.user?.roleId as string;
 
-      if (
-        !(await findUser("id", userId)) ||
-        (directUserId && !(await findUser("id", directUserId)))
-      ) {
-        res.status(404).json({ error: "User not found" });
-        return;
-      }
-
-      if (!(await compareHash(confirmationPassword, userId))) {
-        res.status(401).json({ error: "Invalid Credentials" });
-        return;
-      }
-
-      if (!directUserId && currentRoleId === roleIdToConvert) {
-        res.status(409).json({ error: "User already of the desired type" });
-        return;
-      }
-
-      const targetUserId = directUserId ?? userId;
-      const updatedUser = await updateUserRole(roleIdToConvert, targetUserId);
-
-      res.status(200).json({
-        message: "User type changed",
-        user: updatedUser,
-      });
+    if (
+      !(await findUser("id", userId)) ||
+      (directUserId && !(await findUser("id", directUserId)))
+    ) {
+      res.status(404).json({ error: "User not found" });
       return;
-    } catch (err) {
-      next(err);
     }
-  };
+
+    if (!(await compareHash(confirmationPassword, userId))) {
+      res.status(401).json({ error: "Invalid Credentials" });
+      return;
+    }
+
+    if (!directUserId && currentRoleId === roleIdToConvert) {
+      res.status(409).json({ error: "User already of the desired type" });
+      return;
+    }
+
+    const targetUserId = directUserId ?? userId;
+    const updatedUser = await updateUserRole(roleIdToConvert, targetUserId);
+
+    res.status(200).json({
+      message: "User type changed",
+      user: updatedUser,
+    });
+    return;
+  });
 };
 
-export const deleteUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
-  try {
+export const deleteUser = catchAsync(
+  async (req: Request, res: Response): Promise<void> => {
     const { confirmationPassword } = matchedData(req);
 
     const userId: string = req.user?.id as string;
@@ -212,7 +181,5 @@ export const deleteUser = async (
 
     res.status(200).json({ message: "User Deleted! Logged Out!" });
     return;
-  } catch (err) {
-    next(err);
-  }
-};
+  },
+);

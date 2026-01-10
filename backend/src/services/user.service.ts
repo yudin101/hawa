@@ -137,6 +137,51 @@ export const compareHash = async (
   return true;
 };
 
+export const generateSetClauses = async (
+  userId: string,
+  username?: string,
+  newPassword?: string,
+  phoneNumber?: string,
+  email?: string,
+  addressId?: string,
+): Promise<{ setClauses: string[]; queryValues: string[] }> => {
+  let setClauses: string[] = [];
+  let queryValues: string[] = [userId];
+  let placeholderCount = 2;
+
+  if (username) {
+    setClauses.push(`username = $${placeholderCount}`);
+    placeholderCount++;
+    queryValues.push(username);
+  }
+
+  if (newPassword) {
+    setClauses.push(`password = $${placeholderCount}`);
+    placeholderCount++;
+    queryValues.push(await bcrypt.hash(newPassword, 10));
+  }
+
+  if (phoneNumber) {
+    setClauses.push(`phone_number = $${placeholderCount}`);
+    placeholderCount++;
+    queryValues.push(phoneNumber);
+  }
+
+  if (email) {
+    setClauses.push(`email = $${placeholderCount}`);
+    placeholderCount++;
+    queryValues.push(email);
+  }
+
+  if (addressId) {
+    setClauses.push(`address_id = $${placeholderCount}`);
+    placeholderCount++;
+    queryValues.push(addressId);
+  }
+
+  return { setClauses, queryValues };
+};
+
 export const updateUserInfo = async (
   setClauses: string[],
   queryValues: string[],
@@ -164,13 +209,6 @@ export const updateUserRole = async (roleId: string, targetUserId: string) => {
   );
 
   return result.rows[0];
-};
-
-export const extractExistingHash = async (userId: string) => {
-  const result = await pool.query(`SELECT password FROM users WHERE id = $1`, [
-    userId,
-  ]);
-  return result.rows[0].password;
 };
 
 export const removeUserById = async (userId: string) => {

@@ -29,6 +29,14 @@ export const searchUserValidation: Schema = {
 };
 
 export const updateUserValidation: Schema = {
+  id: {
+    in: ["body"],
+    optional: true,
+    isString: {
+      errorMessage: "User Id must be a string",
+    },
+    trim: true,
+  },
   username: {
     ...registerValidation.username,
     optional: true,
@@ -44,6 +52,19 @@ export const updateUserValidation: Schema = {
   confirmNewPassword: {
     ...registerValidation.confirmPassword,
     optional: true,
+    custom: {
+      options: (value, { req }) => {
+        if (!value && req.body.newPassword) {
+          throw new Error("Please confirm your password");
+        }
+
+        if (req.body.newPassword && value !== req.body.newPassword.trim()) {
+          throw new Error("Password confirmation does not match password");
+        }
+
+        return true;
+      },
+    },
   },
   phoneNumber: {
     ...registerValidation.phoneNumber,
@@ -62,17 +83,15 @@ export const changeUserTypeValidation: Schema = {
   confirmationPassword: {
     ...updateUserValidation.confirmationPassword,
   },
-  directUserId: {
-    in: ["body"],
-    optional: true,
-    isString: {
-      errorMessage: "Direct User Id must be a string",
-    },
-    trim: true,
+  id: {
+    ...updateUserValidation.id,
   },
 };
 
 export const deleteUserValidation: Schema = {
+  id: {
+    ...changeUserTypeValidation.id,
+  },
   confirmationPassword: {
     ...changeUserTypeValidation.confirmationPassword,
   },

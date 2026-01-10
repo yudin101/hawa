@@ -56,6 +56,14 @@ export const registerValidation: Schema = {
       errorMessage: "Confirmed password must be a string",
     },
     trim: true,
+    custom: {
+      options: (value, { req }) => {
+        if (value !== req.body.password.trim()) {
+          throw new Error("Password confirmation does not match password");
+        }
+        return true;
+      },
+    },
   },
   phoneNumber: {
     in: ["body"],

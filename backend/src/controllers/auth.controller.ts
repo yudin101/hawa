@@ -17,7 +17,7 @@ import { catchAsync } from "../utils/catchAsync.util";
 
 export const registerUser = (roleId: RoleIdType) => {
   return catchAsync(async (req: Request, res: Response): Promise<void> => {
-    let { username, email, password, confirmPassword, phoneNumber, addressId } =
+    let { username, email, password, phoneNumber, addressId } =
       matchedData(req);
 
     // Removing +977 before sending it to the db
@@ -37,11 +37,6 @@ export const registerUser = (roleId: RoleIdType) => {
 
     if (await findUser("phone_number", phoneNumber)) {
       res.status(409).json({ error: "Phone number already exists" });
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      res.status(400).json({ error: "Password confirmation does not match" });
       return;
     }
 

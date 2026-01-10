@@ -3,6 +3,26 @@ import { ROLES } from "../constants/roles";
 import { User } from "../types/user";
 import bcrypt from "bcrypt";
 
+export const generateQueryString = (mainQueryString: string) => {
+  return `WITH new_user AS (
+    ${mainQueryString}
+    RETURNING *
+    )
+
+    SELECT
+      u.id,
+      r.role,
+      u.username,
+      u.email,
+      u.phone_number AS "phoneNumber",
+      a.district,
+      a.municipality,
+      a.street_name AS "streetName"
+    FROM new_user u
+    JOIN roles r ON u.role_id = r.id
+    JOIN addresses a ON u.address_id = a.id`;
+};
+
 export const createUser = async (userData: {
   username: string;
   email: string;
@@ -17,21 +37,16 @@ export const createUser = async (userData: {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const result = await pool.query(
-    `INSERT INTO users (
-      username,
-      email,
-      password,
-      phone_number,
-      address_id,
-      role_id
-    ) VALUES ($1, $2, $3, $4, $5, $6)
-    RETURNING
-      id,
-      role_id AS "roleId",
-      username,
-      email,
-      phone_number AS "phoneNumber",
-      address_id AS "addressId"`,
+    generateQueryString(
+      `INSERT INTO users (
+        username,
+        email,
+        password,
+        phone_number,
+        address_id,
+        role_id
+      ) VALUES ($1, $2, $3, $4, $5, $6)`,
+    ),
     [username, email, hashedPassword, phoneNumber, addressId, roleId],
   );
 
@@ -126,34 +141,25 @@ export const updateUserInfo = async (
   setClauses: string[],
   queryValues: string[],
 ) => {
-  const query = `
+  const result = await pool.query(
+    generateQueryString(`
       UPDATE users
       SET 
         ${setClauses.join(", ")}
-      WHERE id = $1
-      RETURNING 
-        id, 
-        username, 
-        email, 
-        phone_number AS "phoneNumber", 
-        address_id AS "addressId"`;
+      WHERE id = $1`),
+    queryValues,
+  );
 
-  const result = await pool.query(query, queryValues);
   return result.rows[0];
 };
 
 export const updateUserRole = async (roleId: string, targetUserId: string) => {
   const result = await pool.query(
-    `UPDATE users
-        SET role_id = $1 
-        WHERE id = $2
-        RETURNING
-          id,
-          role_id AS "roleId",
-          username,
-          email,
-          phone_number AS "phoneNumber",
-          address_id AS "addressId"`,
+    generateQueryString(
+      `UPDATE users
+      SET role_id = $1
+      WHERE id = $2`,
+    ),
     [roleId, targetUserId],
   );
 

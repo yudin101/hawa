@@ -50,10 +50,11 @@ export const updateUser = catchAsync(
     } = matchedData(req);
 
     const currentUserId: string = req.user?.id as string;
+    const isAdmin = req.user?.roleId === ROLES.ADMIN;
 
     if (
       !(await findUser("id", currentUserId)) ||
-      (requestUserId && !(await findUser("id", requestUserId)))
+      (isAdmin && requestUserId && !(await findUser("id", requestUserId)))
     ) {
       res.status(404).json({ error: "User not found" });
       return;
@@ -65,7 +66,7 @@ export const updateUser = catchAsync(
     }
 
     let targetUserId = currentUserId;
-    if (requestUserId && req.user?.roleId === ROLES.ADMIN) {
+    if (requestUserId && isAdmin) {
       targetUserId = requestUserId;
     }
 
@@ -99,10 +100,11 @@ export const changeUserType = (roleIdToConvert: string) => {
 
     const currentUserId: string = req.user?.id as string;
     const currentUserRoleId: string = req.user?.roleId as string;
+    const isAdmin = currentUserRoleId === ROLES.ADMIN;
 
     if (
       !(await findUser("id", currentUserId)) ||
-      (requestUserId && !(await findUser("id", requestUserId)))
+      (isAdmin && requestUserId && !(await findUser("id", requestUserId)))
     ) {
       res.status(404).json({ error: "User not found" });
       return;
@@ -118,7 +120,11 @@ export const changeUserType = (roleIdToConvert: string) => {
       return;
     }
 
-    const targetUserId = requestUserId ?? currentUserId;
+    let targetUserId = currentUserId;
+    if (requestUserId && isAdmin) {
+      targetUserId = requestUserId;
+    }
+
     const updatedUser = await updateUserRole(roleIdToConvert, targetUserId);
 
     res.status(200).json({
@@ -134,10 +140,11 @@ export const deleteUser = catchAsync(
     const { id: requestUserId, confirmationPassword } = matchedData(req);
 
     const currentUserId: string = req.user?.id as string;
+    const isAdmin = req.user?.roleId === ROLES.ADMIN;
 
     if (
       !(await findUser("id", currentUserId)) ||
-      (requestUserId && !(await findUser("id", requestUserId)))
+      (isAdmin && requestUserId && !(await findUser("id", requestUserId)))
     ) {
       res.status(404).json({ error: "User not found" });
       return;
@@ -149,7 +156,7 @@ export const deleteUser = catchAsync(
     }
 
     let targetUserId = currentUserId;
-    if (requestUserId && req.user?.roleId === ROLES.ADMIN) {
+    if (requestUserId && isAdmin) {
       targetUserId = requestUserId;
     }
 

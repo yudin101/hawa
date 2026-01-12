@@ -1,7 +1,7 @@
 import { Schema } from "express-validator";
-import { loginValidation, registerValidation } from "./auth.validator";
+import { loginSchema, registerSchema } from "./auth.validator";
 
-export const searchUserValidation: Schema = {
+export const searchUserSchema: Schema = {
   username: {
     in: ["query"],
     optional: {
@@ -28,7 +28,7 @@ export const searchUserValidation: Schema = {
   },
 };
 
-export const updateUserValidation: Schema = {
+export const updateUserSchema: Schema = {
   id: {
     in: ["body"],
     optional: true,
@@ -38,19 +38,19 @@ export const updateUserValidation: Schema = {
     trim: true,
   },
   username: {
-    ...registerValidation.username,
+    ...registerSchema.username,
     optional: true,
   },
   email: {
-    ...registerValidation.email,
+    ...registerSchema.email,
     optional: true,
   },
   newPassword: {
-    ...registerValidation.password,
+    ...registerSchema.password,
     optional: true,
   },
   confirmNewPassword: {
-    ...registerValidation.confirmPassword,
+    ...registerSchema.confirmPassword,
     optional: true,
     custom: {
       options: (value, { req }) => {
@@ -67,37 +67,37 @@ export const updateUserValidation: Schema = {
     },
   },
   phoneNumber: {
-    ...registerValidation.phoneNumber,
+    ...registerSchema.phoneNumber,
     optional: true,
   },
   addressId: {
-    ...registerValidation.addressId,
+    ...registerSchema.addressId,
     optional: true,
   },
   confirmationPassword: {
-    ...loginValidation.password,
+    ...loginSchema.password,
   },
 };
 
-export const changeUserTypeValidation: Schema = {
+export const changeUserTypeSchema: Schema = {
   confirmationPassword: {
-    ...updateUserValidation.confirmationPassword,
+    ...loginSchema.confirmationPassword,
   },
   id: {
-    ...updateUserValidation.id,
+    ...updateUserSchema.id,
   },
 };
 
-export const deleteUserValidation: Schema = {
+export const deleteUserSchema: Schema = {
   id: {
-    ...changeUserTypeValidation.id,
+    ...updateUserSchema.id,
   },
   confirmationPassword: {
-    ...changeUserTypeValidation.confirmationPassword,
+    ...loginSchema.confirmationPassword,
   },
 };
 
-export const userWithUsernameValidation: Schema = {
+export const userWithUsernameSchema: Schema = {
   username: {
     in: ["params"],
     isString: true,

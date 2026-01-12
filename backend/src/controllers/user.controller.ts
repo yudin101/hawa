@@ -1,17 +1,16 @@
 import { Request, Response } from "express";
 import { matchedData } from "express-validator";
 import {
-  compareHash,
   findUser,
   fuzzyFindSeller,
-  generateSetClauses,
-  removeUserById,
-  updateUserInfo,
   updateUserRole,
 } from "../services/user.service";
+import { compareHash } from "../services/auth.service";
+import { generateSetClauses } from "../utils/generateSetClauses.util";
 import env from "../config/env";
 import { catchAsync } from "../utils/catchAsync.util";
 import { ROLES } from "../constants/roles";
+import { removeById, updateInfo } from "../services/common.service";
 
 export const searchUser = catchAsync(
   async (req: Request, res: Response): Promise<void> => {
@@ -70,13 +69,9 @@ export const updateUser = catchAsync(
       targetUserId = requestUserId;
     }
 
-    const { setClauses, queryValues } = await generateSetClauses(
-      targetUserId,
-      username,
-      newPassword,
-      phoneNumber,
-      email,
-      addressId,
+    const { setClauses, queryValues } = generateSetClauses(
+      ["id", "username", "password", "phone_number", "email", "address_id"],
+      [targetUserId, username, newPassword, phoneNumber, email, addressId],
     );
 
     if (setClauses.length === 0) {
@@ -84,7 +79,7 @@ export const updateUser = catchAsync(
       return;
     }
 
-    const updatedUser = await updateUserInfo(setClauses, queryValues);
+    const updatedUser = await updateInfo("users", setClauses, queryValues);
 
     res.status(200).json({
       message: "User Updated",
@@ -160,7 +155,7 @@ export const deleteUser = catchAsync(
       targetUserId = requestUserId;
     }
 
-    await removeUserById(targetUserId);
+    await removeById("users", targetUserId);
 
     let responseMessage = "User Deleted!";
     if (targetUserId === currentUserId) {

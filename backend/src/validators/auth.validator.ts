@@ -2,7 +2,7 @@ import { Schema } from "express-validator";
 
 const NEPALI_MOBILE_REGEX = /^(\+977|977)?\s?9[6-9]\d{8}$/;
 
-export const registerValidation: Schema = {
+export const registerSchema: Schema = {
   username: {
     in: ["body"],
     isString: {
@@ -91,7 +91,7 @@ export const registerValidation: Schema = {
   },
 };
 
-export const loginValidation: Schema = {
+export const loginSchema: Schema = {
   username: {
     in: ["body"],
     isString: {
@@ -115,7 +115,7 @@ export const loginValidation: Schema = {
   },
 };
 
-export const refreshTokenValidation: Schema = {
+export const refreshTokenSchema: Schema = {
   refresh_token: {
     in: ["cookies"],
     exists: {

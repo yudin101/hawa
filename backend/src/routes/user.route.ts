@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { checkSchema } from "express-validator";
 import {
-  changeUserTypeValidation,
-  deleteUserValidation,
-  searchUserValidation,
-  updateUserValidation,
-  userWithUsernameValidation,
+  changeUserTypeSchema,
+  deleteUserSchema,
+  searchUserSchema,
+  updateUserSchema,
+  userWithUsernameSchema,
 } from "../validators/user.validator";
 import {
   changeUserType,
@@ -21,11 +21,11 @@ import { checkRole } from "../middlewares/checkRole.middleware";
 
 const router = Router();
 
-router.get("/search", checkSchema(searchUserValidation), validate, searchUser);
+router.get("/search", checkSchema(searchUserSchema), validate, searchUser);
 
 router.get(
   "/:username",
-  checkSchema(userWithUsernameValidation),
+  checkSchema(userWithUsernameSchema),
   validate,
   getUser,
 );
@@ -33,7 +33,7 @@ router.get(
 router.patch(
   "/update",
   authenticate,
-  checkSchema(updateUserValidation),
+  checkSchema(updateUserSchema),
   validate,
   updateUser,
 );
@@ -42,7 +42,7 @@ router.patch(
   "/upgrade/admin",
   authenticate,
   checkRole(ROLES.ADMIN),
-  checkSchema(changeUserTypeValidation),
+  checkSchema(changeUserTypeSchema),
   validate,
   changeUserType(ROLES.ADMIN),
 );
@@ -50,7 +50,7 @@ router.patch(
 router.patch(
   "/upgrade/seller",
   authenticate,
-  checkSchema(changeUserTypeValidation),
+  checkSchema(changeUserTypeSchema),
   validate,
   changeUserType(ROLES.SELLER),
 );
@@ -58,7 +58,7 @@ router.patch(
 router.patch(
   "/downgrade/customer",
   authenticate,
-  checkSchema(changeUserTypeValidation),
+  checkSchema(changeUserTypeSchema),
   validate,
   changeUserType(ROLES.CUSTOMER),
 );
@@ -66,7 +66,7 @@ router.patch(
 router.delete(
   "/delete",
   authenticate,
-  checkSchema(deleteUserValidation),
+  checkSchema(deleteUserSchema),
   validate,
   deleteUser,
 );

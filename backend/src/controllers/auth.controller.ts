@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { matchedData } from "express-validator";
-import { createUser, compareHash, findUser } from "../services/user.service";
+import { createUser, findUser } from "../services/user.service";
+import { compareHash } from "../services/auth.service";
 import { findAddress } from "../services/address.service";
 import {
   addRefreshTokenRecord,
@@ -35,7 +36,7 @@ export const registerUser = (roleId: RoleIdType) => {
       return;
     }
 
-    if (!(await findAddress(addressId))) {
+    if (!(await findAddress("id", { addressId }))) {
       res.status(404).json({ error: "Address does not exist" });
       return;
     }

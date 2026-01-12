@@ -2,8 +2,8 @@ import { Router } from "express";
 import registerRoutes from "./register.route";
 import { checkSchema } from "express-validator";
 import {
-  loginValidation,
-  refreshTokenValidation,
+  loginSchema,
+  refreshTokenSchema,
 } from "../validators/auth.validator";
 import { validate } from "../middlewares/validation.middleware";
 import { authenticate } from "../middlewares/authenticate.middleware";
@@ -20,14 +20,14 @@ router.use(
   registerRoutes,
 );
 
-router.post("/login", checkSchema(loginValidation), validate, loginUser);
+router.post("/login", checkSchema(loginSchema), validate, loginUser);
 
-router.post("/refresh", checkSchema(refreshTokenValidation), refreshToken);
+router.post("/refresh", checkSchema(refreshTokenSchema), refreshToken);
 
 router.post(
   "/logout",
   authenticate,
-  checkSchema(refreshTokenValidation),
+  checkSchema(refreshTokenSchema),
   validate,
   logoutUser,
 );

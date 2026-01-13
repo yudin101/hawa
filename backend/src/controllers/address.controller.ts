@@ -1,10 +1,25 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../utils/catchAsync.util";
 import { matchedData } from "express-validator";
-import { insertAddress, findAddress } from "../services/address.service";
+import {
+  insertAddress,
+  findAddress,
+  fuzzyFindAddress,
+} from "../services/address.service";
 import { generateSetClauses } from "../utils/generateSetClauses.util";
 import { removeById, updateInfo } from "../services/common.service";
 import { compareHash } from "../services/auth.service";
+
+export const searchAddress = catchAsync(
+  async (req: Request, res: Response): Promise<void> => {
+    const { searchTerm, limit } = matchedData(req);
+
+    const searchResults = await fuzzyFindAddress(searchTerm, limit);
+
+    res.status(200).json(searchResults);
+    return;
+  },
+);
 
 export const addAddress = catchAsync(
   async (req: Request, res: Response): Promise<void> => {
@@ -88,6 +103,6 @@ export const deleteAddress = catchAsync(async (req: Request, res: Response) => {
 
   await removeById("addresses", addressId);
 
-  res.status(200).json({message: "Address removed"})
-  return
+  res.status(200).json({ message: "Address removed" });
+  return;
 });

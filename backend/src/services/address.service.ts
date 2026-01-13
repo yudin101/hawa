@@ -42,6 +42,34 @@ export const findAddress = async (
   return false;
 };
 
+export const fuzzyFindAddress = async (
+  searchTerm: string,
+  limit: number = 10,
+) => {
+  const searchTermQueryReady = `%${searchTerm}%`;
+
+  const result = await pool.query(
+    `SELECT
+      id,
+      district,
+      municipality,
+      street_name AS "streetName"
+    FROM addresses
+    WHERE district ILIKE $1
+    OR municipality ILIKE $1
+    OR street_name ILIKE $1
+    ORDER BY 
+      district ASC,
+      municipality ASC,
+      street_name ASC,
+      id ASC
+    LIMIT $2`,
+    [searchTermQueryReady, limit],
+  );
+
+  return result.rows;
+};
+
 export const insertAddress = async (addressData: {
   district: string;
   municipality: string;

@@ -1,6 +1,29 @@
 import { Schema } from "express-validator";
 import { loginSchema } from "./auth.validator";
 
+export const searchAddressSchema: Schema = {
+  searchTerm: {
+    in: ["query"],
+    isString: {
+      errorMessage: "Address search term must be a string",
+    },
+    trim: true,
+    toUpperCase: true,
+  },
+  limit: {
+    in: ["query"],
+    optional: true,
+    isInt: {
+      options: {
+        min: 1,
+        max: 100,
+      },
+      errorMessage: "Limit must be an integer between 1 and 100",
+    },
+    toInt: true,
+  },
+};
+
 export const addAddressSchema: Schema = {
   district: {
     in: ["body"],

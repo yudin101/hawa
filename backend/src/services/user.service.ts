@@ -97,6 +97,9 @@ export const fuzzyFindSeller = async (username: string, limit: number = 10) => {
     FROM users u
     INNER JOIN addresses a ON u.address_id = a.id
     WHERE username ILIKE $1 AND u.role_id = $2
+    ORDER BY 
+      username ASC,
+      id ASC
     LIMIT $3`,
     [searchTerm, ROLES.SELLER, limit],
   );

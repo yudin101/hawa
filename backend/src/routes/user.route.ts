@@ -21,7 +21,7 @@ import { checkRole } from "../middlewares/checkRole.middleware";
 
 const router = Router();
 
-router.get("/search", checkSchema(searchUserSchema), validate, searchUser);
+router.get("/seller/search", checkSchema(searchUserSchema), validate, searchUser);
 
 router.get(
   "/:username",

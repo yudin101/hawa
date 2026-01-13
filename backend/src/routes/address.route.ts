@@ -4,14 +4,27 @@ import { checkRole } from "../middlewares/checkRole.middleware";
 import { ROLES } from "../constants/roles";
 import { checkSchema } from "express-validator";
 import { validate } from "../middlewares/validation.middleware";
-import { addAddress, deleteAddress, updateAddress } from "../controllers/address.controller";
+import {
+  addAddress,
+  deleteAddress,
+  searchAddress,
+  updateAddress,
+} from "../controllers/address.controller";
 import {
   addAddressSchema,
   deleteAddressSchema,
+  searchAddressSchema,
   updateAddressSchema,
 } from "../validators/address.validator";
 
 const router = Router();
+
+router.get(
+  "/search",
+  checkSchema(searchAddressSchema),
+  validate,
+  searchAddress,
+);
 
 router.post(
   "/add",

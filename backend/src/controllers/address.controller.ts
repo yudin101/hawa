@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { catchAsync } from "../utils/catchAsync.util";
 import { matchedData } from "express-validator";
 import {
+  getAddress,
   insertAddress,
   findAddress,
   fuzzyFindAddress,
@@ -13,10 +14,15 @@ import { compareHash } from "../services/auth.service";
 export const searchAddress = catchAsync(
   async (req: Request, res: Response): Promise<void> => {
     const { searchTerm, page, limit } = matchedData(req);
+    let addressResults;
 
-    const searchResults = await fuzzyFindAddress(searchTerm, page, limit);
+    if (searchTerm) {
+      addressResults = await fuzzyFindAddress(searchTerm, page, limit);
+    } else {
+      addressResults = await getAddress(page, limit);
+    }
 
-    res.status(200).json(searchResults);
+    res.status(200).json(addressResults);
     return;
   },
 );
@@ -82,7 +88,7 @@ export const updateAddress = catchAsync(
 
     res
       .status(200)
-      .json({ message: "Address Updates", address: updatedAddress });
+      .json({ message: "Address Updated", address: updatedAddress });
     return;
   },
 );

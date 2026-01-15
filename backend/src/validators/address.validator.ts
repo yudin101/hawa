@@ -5,6 +5,7 @@ import { searchUserSchema } from "./user.validator";
 export const searchAddressSchema: Schema = {
   searchTerm: {
     in: ["query"],
+    optional: true,
     isString: {
       errorMessage: "Address search term must be a string",
     },

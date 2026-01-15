@@ -2,6 +2,29 @@ import pool from "../config/db";
 import { Address } from "../types/address";
 import { generateQueryString } from "../utils/generateQueryString.util";
 
+export const getAddress = async (page: number = 1, limit: number = 10) => {
+  const offset = (page - 1) * limit;
+
+  const result = await pool.query(
+    `SELECT
+      id,
+      district,
+      municipality,
+      street_name AS "streetName"
+    FROM addresses
+    ORDER BY
+      district ASC,
+      municipality ASC,
+      street_name ASC,
+      id ASC
+    LIMIT $1
+    OFFSET $2`,
+    [limit, offset],
+  );
+
+  return result.rows
+};
+
 export const findAddress = async (
   valueType: "id" | "other",
   addressData: {
@@ -31,7 +54,12 @@ export const findAddress = async (
   }
 
   const result = await pool.query(
-    `SELECT * FROM addresses 
+    `SELECT
+      id,
+      district,
+      municipality,
+      street_name AS "streetName"
+    FROM addresses
     WHERE ${whereClause}`,
     queryValues,
   );

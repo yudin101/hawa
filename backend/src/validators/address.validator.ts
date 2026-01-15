@@ -7,7 +7,7 @@ export const searchAddressSchema: Schema = {
     in: ["query"],
     optional: true,
     isString: {
-      errorMessage: "Address search term must be a string",
+      errorMessage: "Search term must be a string",
     },
     trim: true,
     isLength: {
@@ -15,7 +15,7 @@ export const searchAddressSchema: Schema = {
         min: 2,
         max: 50,
       },
-      errorMessage: "Address search term must be between 2 and 50 characters",
+      errorMessage: "Search term must be between 2 and 50 characters",
     },
     toUpperCase: true,
   },

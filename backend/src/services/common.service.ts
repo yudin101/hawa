@@ -2,7 +2,7 @@ import { generateQueryString } from "../utils/generateQueryString.util";
 import pool from "../config/db";
 
 export const updateInfo = async (
-  tableName: "users" | "addresses",
+  tableName: "users" | "addresses" | "categories",
   setClauses: string[],
   queryValues: string[],
 ) => {
@@ -21,7 +21,7 @@ export const updateInfo = async (
 };
 
 export const removeById = async (
-  tableName: "users" | "addresses",
+  tableName: "users" | "addresses" | "categories",
   id: string,
 ) => {
   await pool.query(`DELETE FROM ${tableName} WHERE id = $1`, [id]);

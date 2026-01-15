@@ -1,5 +1,5 @@
 export const generateQueryString = (
-  table: "users" | "addresses",
+  table: "users" | "addresses" | "categories",
   mainQueryString: string,
 ) => {
   const userSelectQuery = `
@@ -26,9 +26,17 @@ export const generateQueryString = (
     FROM new_table n
     WHERE id = n.id`;
 
+  const categoriesSelectQuery = `
+    SELECT
+      id,
+      category
+    FROM new_table n
+    WHERE id = n.id`;
+
   const tableRelation = {
     users: userSelectQuery,
     addresses: addressSelectQuery,
+    categories: categoriesSelectQuery,
   };
 
   return `WITH new_table AS (

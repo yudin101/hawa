@@ -1,7 +1,8 @@
-import express, { Application, Request, Response, NextFunction } from "express";
+import express, { Application } from "express";
 import { log } from "./middlewares/log.middleware";
 import routes from "./routes/index";
 import cookieParser from "cookie-parser";
+import errorHandler from "./middlewares/error.middleware";
 
 const app: Application = express();
 app.use(express.json());
@@ -9,11 +10,6 @@ app.use(cookieParser());
 
 app.use(log);
 app.use("/api", routes);
-
-app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
-  console.error(err);
-  res.status(500).json({ error: "Internal Sever Error" });
-  return;
-});
+app.use(errorHandler);
 
 export default app;

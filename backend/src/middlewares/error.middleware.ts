@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 // 404 Handler
 export const handle404 = (req: Request, res: Response) => {
   res.status(404).json({
-    error: `Route ${req.originalUrl} not found`,
+    error: `${req.method} - ${req.originalUrl} Not Found`,
   });
 };
 

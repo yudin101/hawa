@@ -14,9 +14,9 @@ import { removeById, updateInfo } from "../services/common.service";
 
 export const searchUser = catchAsync(
   async (req: Request, res: Response): Promise<void> => {
-    const { username, limit } = matchedData(req);
+    const { username, page, limit } = matchedData(req);
 
-    const searchResults = await fuzzyFindSeller(username, limit);
+    const searchResults = await fuzzyFindSeller(username, page, limit);
 
     res.status(200).json(searchResults);
     return;

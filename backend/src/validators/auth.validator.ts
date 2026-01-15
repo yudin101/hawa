@@ -9,17 +9,17 @@ export const registerSchema: Schema = {
       errorMessage: "Username must be a string",
     },
     trim: true,
-    toLowerCase: true,
-    matches: {
-      options: /^[a-zA-Z0-9._]+$/,
-      errorMessage:
-        "Username can only contain letters, numbers, dots, and underscores.",
-    },
     isLength: {
       options: {
         max: 50,
       },
       errorMessage: "Username must be within 50 characters",
+    },
+    toLowerCase: true,
+    matches: {
+      options: /^[a-zA-Z0-9._]+$/,
+      errorMessage:
+        "Username can only contain letters, numbers, dots, and underscores.",
     },
   },
   email: {
@@ -28,26 +28,25 @@ export const registerSchema: Schema = {
       errorMessage: "Email must be a string",
     },
     trim: true,
-    normalizeEmail: true,
-    isEmail: {
-      errorMessage: "Invalid email format",
-    },
     isLength: {
       options: {
         max: 100,
       },
       errorMessage: "Email must be within 100 characters",
     },
+    isEmail: {
+      errorMessage: "Invalid email format",
+    },
+    normalizeEmail: true,
   },
   password: {
     in: ["body"],
     isString: {
       errorMessage: "Password must be a string",
     },
-    trim: true,
     isLength: {
-      options: { min: 8 },
-      errorMessage: "Password must be at least 8 characters",
+      options: { min: 8, max: 72 },
+      errorMessage: "Password must be between 8 and 72 characters",
     },
   },
   confirmPassword: {
@@ -98,13 +97,13 @@ export const loginSchema: Schema = {
       errorMessage: "Username must be a string",
     },
     trim: true,
-    toLowerCase: true,
     isLength: {
       options: {
         max: 50,
       },
       errorMessage: "Username must be within 50 characters",
     },
+    toLowerCase: true,
   },
   password: {
     in: ["body"],

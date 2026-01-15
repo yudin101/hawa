@@ -14,6 +14,15 @@ export const searchUserSchema: Schema = {
       errorMessage: "Search term is too long",
     },
   },
+  page: {
+    in: ["query"],
+    optional: true,
+    isInt: {
+      options: { min: 1 },
+      errorMessage: "Page number must be greater than zero",
+    },
+    toInt: true,
+  },
   limit: {
     in: ["query"],
     optional: true,

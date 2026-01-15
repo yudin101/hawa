@@ -44,9 +44,11 @@ export const findAddress = async (
 
 export const fuzzyFindAddress = async (
   searchTerm: string,
+  page: number = 1,
   limit: number = 10,
 ) => {
   const searchTermQueryReady = `%${searchTerm}%`;
+  const offset = (page - 1) * limit;
 
   const result = await pool.query(
     `SELECT
@@ -63,8 +65,9 @@ export const fuzzyFindAddress = async (
       municipality ASC,
       street_name ASC,
       id ASC
-    LIMIT $2`,
-    [searchTermQueryReady, limit],
+    LIMIT $2
+    OFFSET $3`,
+    [searchTermQueryReady, limit, offset],
   );
 
   return result.rows;

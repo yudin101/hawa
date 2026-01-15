@@ -12,9 +12,9 @@ import { compareHash } from "../services/auth.service";
 
 export const searchAddress = catchAsync(
   async (req: Request, res: Response): Promise<void> => {
-    const { searchTerm, limit } = matchedData(req);
+    const { searchTerm, page, limit } = matchedData(req);
 
-    const searchResults = await fuzzyFindAddress(searchTerm, limit);
+    const searchResults = await fuzzyFindAddress(searchTerm, page, limit);
 
     res.status(200).json(searchResults);
     return;

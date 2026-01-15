@@ -1,5 +1,6 @@
 import { Schema } from "express-validator";
 import { loginSchema } from "./auth.validator";
+import { searchUserSchema } from "./user.validator";
 
 export const searchAddressSchema: Schema = {
   searchTerm: {
@@ -8,19 +9,20 @@ export const searchAddressSchema: Schema = {
       errorMessage: "Address search term must be a string",
     },
     trim: true,
+    isLength: {
+      options: {
+        min: 2,
+        max: 50,
+      },
+      errorMessage: "Address search term must be between 2 and 50 characters",
+    },
     toUpperCase: true,
   },
+  page: {
+    ...searchUserSchema.page,
+  },
   limit: {
-    in: ["query"],
-    optional: true,
-    isInt: {
-      options: {
-        min: 1,
-        max: 100,
-      },
-      errorMessage: "Limit must be an integer between 1 and 100",
-    },
-    toInt: true,
+    ...searchUserSchema.limit,
   },
 };
 
@@ -31,6 +33,13 @@ export const addAddressSchema: Schema = {
       errorMessage: "District must be a string",
     },
     trim: true,
+    isLength: {
+      options: {
+        min: 2,
+        max: 50,
+      },
+      errorMessage: "District length must be between 2 and 50",
+    },
     toUpperCase: true,
   },
   municipality: {
@@ -39,6 +48,13 @@ export const addAddressSchema: Schema = {
       errorMessage: "Municipality must be a string",
     },
     trim: true,
+    isLength: {
+      options: {
+        min: 2,
+        max: 50,
+      },
+      errorMessage: "Municipality length must be between 2 and 50",
+    },
     toUpperCase: true,
   },
   streetName: {
@@ -47,6 +63,13 @@ export const addAddressSchema: Schema = {
       errorMessage: "Street name must be a string",
     },
     trim: true,
+    isLength: {
+      options: {
+        min: 2,
+        max: 50,
+      },
+      errorMessage: "Street name length must be between 2 and 50",
+    },
     toUpperCase: true,
   },
 };

@@ -18,7 +18,8 @@ export const createUser = async (userData: {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const result = await pool.query(
-    generateQueryString("users",
+    generateQueryString(
+      "users",
       `INSERT INTO users (
         username,
         email,
@@ -81,8 +82,14 @@ export const findUser = async (
   return false;
 };
 
-export const fuzzyFindSeller = async (username: string, limit: number = 10) => {
+export const fuzzyFindSeller = async (
+  username: string,
+  page: number = 1,
+  limit: number = 10,
+) => {
   const searchTerm = `%${username}%`;
+  const offset = (page - 1) * limit;
+
   const result = await pool.query(
     `SELECT
       u.id,
@@ -100,15 +107,17 @@ export const fuzzyFindSeller = async (username: string, limit: number = 10) => {
     ORDER BY 
       username ASC,
       id ASC
-    LIMIT $3`,
-    [searchTerm, ROLES.SELLER, limit],
+    LIMIT $3
+    OFFET $4`,
+    [searchTerm, ROLES.SELLER, limit, offset],
   );
   return result.rows;
 };
 
 export const updateUserRole = async (roleId: string, targetUserId: string) => {
   const result = await pool.query(
-    generateQueryString("users",
+    generateQueryString(
+      "users",
       `UPDATE users
       SET role_id = $1
       WHERE id = $2`,

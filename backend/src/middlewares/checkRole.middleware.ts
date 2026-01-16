@@ -1,17 +1,17 @@
 import { Request, Response, NextFunction } from "express";
 
-export const checkRole = (roleId: string) => {
+export const checkRole = (firstRoleId: string, secondRoleId?: string) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
-      return res.status(401).json({ error: "Authentication required." });
+      return res.status(401).json({ error: "Authentication required" });
     }
 
-    if (req.user.roleId === roleId) {
+    const currentUserId = req.user.roleId;
+
+    if (currentUserId === firstRoleId || currentUserId === secondRoleId) {
       next();
     } else {
-      return res
-        .status(403)
-        .json({ error: "Forbidden: Insufficient privileges." });
+      return res.status(403).json({ error: "Insufficient privileges" });
     }
   };
 };

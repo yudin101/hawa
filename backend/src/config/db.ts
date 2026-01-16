@@ -58,7 +58,7 @@ export const initializeSchema = async (): Promise<void> => {
         picture_url TEXT NOT NULL,
         body TEXT NOT NULL,
         category_id BIGINT NOT NULL REFERENCES categories (id),
-        user_id BIGINT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+        seller_id BIGINT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
         available_units BIGINT NOT NULL,
         price NUMERIC(10, 2) NOT NULL
     );`

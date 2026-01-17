@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { checkSchema } from "express-validator";
 import {
   changeUserTypeSchema,
   deleteUserSchema,
@@ -14,32 +13,21 @@ import {
   searchUser,
   updateUser,
 } from "../controllers/user.controller";
-import { validate } from "../middlewares/validation.middleware";
+import { validateSchema } from "../middlewares/validation.middleware";
 import { authenticate } from "../middlewares/authenticate.middleware";
 import { ROLES } from "../constants/roles";
 import { checkRole } from "../middlewares/checkRole.middleware";
 
 const router = Router();
 
-router.get(
-  "/seller/search",
-  checkSchema(searchUserSchema),
-  validate,
-  searchUser,
-);
+router.get("/search/seller", validateSchema(searchUserSchema), searchUser);
 
-router.get(
-  "/:username",
-  checkSchema(userWithUsernameSchema),
-  validate,
-  getUser,
-);
+router.get("/:username", validateSchema(userWithUsernameSchema), getUser);
 
 router.patch(
   "/update",
   authenticate,
-  checkSchema(updateUserSchema),
-  validate,
+  validateSchema(updateUserSchema),
   updateUser,
 );
 
@@ -47,32 +35,28 @@ router.patch(
   "/upgrade/admin",
   authenticate,
   checkRole(ROLES.ADMIN),
-  checkSchema(changeUserTypeSchema),
-  validate,
+  validateSchema(changeUserTypeSchema),
   changeUserType(ROLES.ADMIN),
 );
 
 router.patch(
   "/upgrade/seller",
   authenticate,
-  checkSchema(changeUserTypeSchema),
-  validate,
+  validateSchema(changeUserTypeSchema),
   changeUserType(ROLES.SELLER),
 );
 
 router.patch(
   "/downgrade/customer",
   authenticate,
-  checkSchema(changeUserTypeSchema),
-  validate,
+  validateSchema(changeUserTypeSchema),
   changeUserType(ROLES.CUSTOMER),
 );
 
 router.delete(
   "/delete",
   authenticate,
-  checkSchema(deleteUserSchema),
-  validate,
+  validateSchema(deleteUserSchema),
   deleteUser,
 );
 

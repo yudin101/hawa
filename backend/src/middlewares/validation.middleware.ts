@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { validationResult } from "express-validator";
+import { validationResult, Schema, checkSchema } from "express-validator";
 
-export const validate = (req: Request, res: Response, next: NextFunction) => {
+const validate = (req: Request, res: Response, next: NextFunction) => {
   const valResult = validationResult(req);
 
   if (!valResult.isEmpty()) {
@@ -11,3 +11,8 @@ export const validate = (req: Request, res: Response, next: NextFunction) => {
 
   next();
 };
+
+export const validateSchema = (schema: Schema) => [
+  ...checkSchema(schema),
+  validate
+]

@@ -1,12 +1,11 @@
 import { Router } from "express";
-import { checkSchema } from "express-validator";
 import {
   addCategorySchema,
   deleteCategorySchema,
   searchCategorySchema,
   updateCategorySchema,
 } from "../validators/category.validator";
-import { validate } from "../middlewares/validation.middleware";
+import { validateSchema } from "../middlewares/validation.middleware";
 import {
   addCategory,
   deleteCategory,
@@ -21,8 +20,7 @@ const router = Router();
 
 router.get(
   "/search",
-  checkSchema(searchCategorySchema),
-  validate,
+  validateSchema(searchCategorySchema),
   searchCategory,
 );
 
@@ -30,8 +28,7 @@ router.post(
   "/add",
   authenticate,
   checkRole(ROLES.ADMIN),
-  checkSchema(addCategorySchema),
-  validate,
+  validateSchema(addCategorySchema),
   addCategory,
 );
 
@@ -39,8 +36,7 @@ router.patch(
   "/update",
   authenticate,
   checkRole(ROLES.ADMIN),
-  checkSchema(updateCategorySchema),
-  validate,
+  validateSchema(updateCategorySchema),
   updateCategory,
 );
 
@@ -48,8 +44,7 @@ router.delete(
   "/delete",
   authenticate,
   checkRole(ROLES.ADMIN),
-  checkSchema(deleteCategorySchema),
-  validate,
+  validateSchema(deleteCategorySchema),
   deleteCategory,
 );
 

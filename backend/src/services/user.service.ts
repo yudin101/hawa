@@ -108,7 +108,7 @@ export const fuzzyFindSeller = async (
       username ASC,
       id ASC
     LIMIT $3
-    OFFET $4`,
+    OFFSET $4`,
     [searchTerm, ROLES.SELLER, limit, offset],
   );
   return result.rows;

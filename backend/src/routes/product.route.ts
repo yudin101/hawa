@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { checkSchema } from "express-validator";
 import {
   addProductSchema,
   getProductSchema,
@@ -14,28 +13,22 @@ import {
   deleteProduct,
   updateProduct,
 } from "../controllers/product.controller";
-import { validate } from "../middlewares/validation.middleware";
+import { validateSchema } from "../middlewares/validation.middleware";
 import { authenticate } from "../middlewares/authenticate.middleware";
 import { checkRole } from "../middlewares/checkRole.middleware";
 import { ROLES } from "../constants/roles";
 
 const router = Router();
 
-router.get(
-  "/search",
-  checkSchema(searchProductSchema),
-  validate,
-  searchProduct,
-);
+router.get("/search", validateSchema(searchProductSchema), searchProduct);
 
-router.get("/:id", checkSchema(getProductSchema), validate, getProduct);
+router.get("/:id", validateSchema(getProductSchema), getProduct);
 
 router.post(
   "/add",
   authenticate,
   checkRole(ROLES.SELLER, ROLES.ADMIN),
-  checkSchema(addProductSchema),
-  validate,
+  validateSchema(addProductSchema),
   addProduct,
 );
 
@@ -43,8 +36,7 @@ router.patch(
   "/update",
   authenticate,
   checkRole(ROLES.SELLER, ROLES.ADMIN),
-  checkSchema(updateProductSchema),
-  validate,
+  validateSchema(updateProductSchema),
   updateProduct,
 );
 
@@ -52,8 +44,7 @@ router.delete(
   "/delete",
   authenticate,
   checkRole(ROLES.SELLER, ROLES.ADMIN),
-  checkSchema(deleteProductSchema),
-  validate,
+  validateSchema(deleteProductSchema),
   deleteProduct,
 );
 

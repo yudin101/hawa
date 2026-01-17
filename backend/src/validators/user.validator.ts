@@ -38,8 +38,8 @@ export const updateUserSchema: Schema = {
   id: {
     in: ["body"],
     optional: true,
-    isString: {
-      errorMessage: "User Id must be a string",
+    isInt: {
+      errorMessage: "User Id must be a integer",
     },
     trim: true,
   },

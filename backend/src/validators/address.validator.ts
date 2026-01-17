@@ -93,8 +93,8 @@ export const updateAddressSchema: Schema = {
   },
   id: {
     in: ["body"],
-    isString: {
-      errorMessage: "Address ID must be a string",
+    isInt: {
+      errorMessage: "Address ID must be a integer",
     },
     trim: true,
   },

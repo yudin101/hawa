@@ -156,7 +156,7 @@ export const updateProduct = catchAsync(async (req: Request, res: Response) => {
     return;
   }
 
-  if (!(await findCategory({ categoryId }))) {
+  if (categoryId && !(await findCategory({ categoryId }))) {
     res.status(404).json({ error: "Category Not Found" });
     return;
   }

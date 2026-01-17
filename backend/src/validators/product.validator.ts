@@ -32,7 +32,7 @@ export const getProductSchema: Schema = {
   id: {
     in: ["params"],
     isInt: {
-      errorMessage: "Product ID must be a string",
+      errorMessage: "Product ID must be a integer",
     },
     trim: true,
   },

@@ -42,8 +42,8 @@ export const updateCategorySchema: Schema = {
   },
   id: {
     in: ["body"],
-    isString: {
-      errorMessage: "Category ID must be a string",
+    isInt: {
+      errorMessage: "Category ID must be a integer",
     },
   },
 };

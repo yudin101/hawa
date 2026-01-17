@@ -5,6 +5,7 @@ import {
   getProducts,
   fuzzyFindProduct,
   findProduct,
+  findSellerProducts,
   insertProduct,
 } from "../services/product.service";
 import { findCategory } from "../services/category.service";
@@ -42,6 +43,31 @@ export const getProduct = catchAsync(async (req: Request, res: Response) => {
   return;
 });
 
+export const getSellerProducts = catchAsync(
+  async (req: Request, res: Response) => {
+    const { username, limit, page } = matchedData(req);
+
+    const fetchedUser = await findUser("username", username);
+
+    if (!fetchedUser) {
+      res.status(404).json({ error: "User Not Found" });
+      return;
+    }
+
+    if (fetchedUser.roleId !== ROLES.SELLER) {
+      res.status(403).json({ error: "User Not Seller" });
+      return;
+    }
+
+    const sellerId = fetchedUser.id;
+
+    const result = await findSellerProducts(sellerId, limit, page); // TODO
+
+    res.status(200).json(result);
+    return;
+  },
+);
+
 export const addProduct = catchAsync(async (req: Request, res: Response) => {
   const {
     name,
@@ -62,8 +88,8 @@ export const addProduct = catchAsync(async (req: Request, res: Response) => {
   }
 
   if (!sellerId && currentUserRoleId === ROLES.ADMIN) {
-    res.status(400).json({error: "Admin must provide sellerID"})
-    return
+    res.status(400).json({ error: "Admin must provide sellerID" });
+    return;
   }
 
   if (sellerId && currentUserRoleId === ROLES.ADMIN) {

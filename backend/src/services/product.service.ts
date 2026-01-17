@@ -51,7 +51,7 @@ export const findProduct = async (productData: {
   const { id, name, targetUserId: sellerId } = productData;
 
   if (name && !sellerId) {
-    throw Error("Name and SellerID both required")
+    throw Error("Name and SellerID both required");
   }
 
   const column = id ? "id" : "name";
@@ -90,6 +90,24 @@ export const fuzzyFindProduct = async (
     ${orderByName}
     LIMIT $2 OFFSET $3`,
     [searchTermQuery, limit, offset],
+  );
+
+  return result.rows;
+};
+
+export const findSellerProducts = async (
+  sellerId: string,
+  limit: number = 10,
+  page: number = 1,
+): Promise<(Product | undefined)[]> => {
+  const offset = (page - 1) * limit;
+
+  const result = await pool.query(
+    `${selectQuery}
+    WHERE seller_id = $1
+    ${orderByName}
+    LIMIT $2 OFFSET $3`,
+    [sellerId, limit, offset],
   );
 
   return result.rows;

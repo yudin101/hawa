@@ -1,5 +1,9 @@
 import { Schema } from "express-validator";
-import { searchUserSchema, updateUserSchema } from "./user.validator";
+import {
+  searchUserSchema,
+  updateUserSchema,
+  userWithUsernameSchema,
+} from "./user.validator";
 import { updateCategorySchema } from "./category.validator";
 import { loginSchema } from "./auth.validator";
 
@@ -27,10 +31,22 @@ export const searchProductSchema: Schema = {
 export const getProductSchema: Schema = {
   id: {
     in: ["params"],
-    isString: {
+    isInt: {
       errorMessage: "Product ID must be a string",
     },
     trim: true,
+  },
+};
+
+export const getSellerProductSchema: Schema = {
+  username: {
+    ...userWithUsernameSchema.username,
+  },
+  page: {
+    ...searchUserSchema.page,
+  },
+  limit: {
+    ...searchUserSchema.limit,
   },
 };
 

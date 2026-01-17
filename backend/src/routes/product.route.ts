@@ -5,10 +5,12 @@ import {
   searchProductSchema,
   deleteProductSchema,
   updateProductSchema,
+  getSellerProductSchema,
 } from "../validators/product.validator";
 import {
   addProduct,
   getProduct,
+  getSellerProducts,
   searchProduct,
   deleteProduct,
   updateProduct,
@@ -23,6 +25,12 @@ const router = Router();
 router.get("/search", validateSchema(searchProductSchema), searchProduct);
 
 router.get("/:id", validateSchema(getProductSchema), getProduct);
+
+router.get(
+  "/seller/:username/",
+  validateSchema(getSellerProductSchema),
+  getSellerProducts,
+);
 
 router.post(
   "/add",

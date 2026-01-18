@@ -4,14 +4,16 @@ import { loginSchema, registerSchema } from "./auth.validator";
 export const searchUserSchema: Schema = {
   username: {
     in: ["query"],
-    isString: true,
+    isString: {
+      errorMessage: "Username must be a string",
+    },
     trim: true,
     toLowerCase: true,
     isLength: {
       options: {
         max: 50,
       },
-      errorMessage: "Search term is too long",
+      errorMessage: "Username must be within 50 characters",
     },
   },
   page: {
@@ -105,15 +107,7 @@ export const deleteUserSchema: Schema = {
 
 export const userWithUsernameSchema: Schema = {
   username: {
+    ...searchUserSchema,
     in: ["params"],
-    isString: true,
-    trim: true,
-    toLowerCase: true,
-    isLength: {
-      options: {
-        max: 50,
-      },
-      errorMessage: "Username must be within 50 characters",
-    },
   },
 };

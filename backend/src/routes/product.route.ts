@@ -6,6 +6,7 @@ import {
   deleteProductSchema,
   updateProductSchema,
   getSellerProductSchema,
+  getCategoryProductSchema,
 } from "../validators/product.validator";
 import {
   addProduct,
@@ -14,6 +15,7 @@ import {
   searchProduct,
   deleteProduct,
   updateProduct,
+  getCategoryProducts,
 } from "../controllers/product.controller";
 import { validateSchema } from "../middlewares/validation.middleware";
 import { authenticate } from "../middlewares/authenticate.middleware";
@@ -30,6 +32,12 @@ router.get(
   "/seller/:username/",
   validateSchema(getSellerProductSchema),
   getSellerProducts,
+);
+
+router.get(
+  "/category/:category/",
+  validateSchema(getCategoryProductSchema),
+  getCategoryProducts,
 );
 
 router.post(

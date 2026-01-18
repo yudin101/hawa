@@ -95,8 +95,9 @@ export const fuzzyFindProduct = async (
   return result.rows;
 };
 
-export const findSellerProducts = async (
-  sellerId: string,
+export const findProductsByColumn = async (
+  columnId: string,
+  column: "seller" | "category",
   limit: number = 10,
   page: number = 1,
 ): Promise<(Product | undefined)[]> => {
@@ -104,10 +105,10 @@ export const findSellerProducts = async (
 
   const result = await pool.query(
     `${selectQuery}
-    WHERE seller_id = $1
+    WHERE ${column}_id = $1
     ${orderByName}
     LIMIT $2 OFFSET $3`,
-    [sellerId, limit, offset],
+    [columnId, limit, offset],
   );
 
   return result.rows;

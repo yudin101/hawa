@@ -2,9 +2,8 @@ import { Schema } from "express-validator";
 import {
   searchUserSchema,
   updateUserSchema,
-  userWithUsernameSchema,
 } from "./user.validator";
-import { updateCategorySchema } from "./category.validator";
+import { addCategorySchema, updateCategorySchema } from "./category.validator";
 import { loginSchema } from "./auth.validator";
 
 export const searchProductSchema: Schema = {
@@ -40,7 +39,21 @@ export const getProductSchema: Schema = {
 
 export const getSellerProductSchema: Schema = {
   username: {
-    ...userWithUsernameSchema.username,
+    ...searchUserSchema.username,
+    in: ["params"],
+  },
+  page: {
+    ...searchUserSchema.page,
+  },
+  limit: {
+    ...searchUserSchema.limit,
+  },
+};
+
+export const getCategoryProductSchema: Schema = {
+  category: {
+    ...addCategorySchema.category,
+    in: ["params"],
   },
   page: {
     ...searchUserSchema.page,

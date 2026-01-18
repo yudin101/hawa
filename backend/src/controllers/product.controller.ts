@@ -5,7 +5,7 @@ import {
   getProducts,
   fuzzyFindProduct,
   findProduct,
-  findSellerProducts,
+  findProductsByColumn,
   insertProduct,
 } from "../services/product.service";
 import { findCategory } from "../services/category.service";
@@ -61,7 +61,32 @@ export const getSellerProducts = catchAsync(
 
     const sellerId = fetchedUser.id;
 
-    const result = await findSellerProducts(sellerId, limit, page); // TODO
+    const result = await findProductsByColumn(sellerId, "seller", limit, page);
+
+    res.status(200).json(result);
+    return;
+  },
+);
+
+export const getCategoryProducts = catchAsync(
+  async (req: Request, res: Response) => {
+    const { category, limit, page } = matchedData(req);
+
+    const fetchedCateogry = await findCategory({ category });
+
+    if (!fetchedCateogry) {
+      res.status(404).json({ error: "Category Not Found" });
+      return;
+    }
+
+    const categoryId = fetchedCateogry.id;
+
+    const result = await findProductsByColumn(
+      categoryId,
+      "category",
+      limit,
+      page,
+    );
 
     res.status(200).json(result);
     return;

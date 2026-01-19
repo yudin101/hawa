@@ -107,7 +107,7 @@ export const deleteUserSchema: Schema = {
 
 export const userWithUsernameSchema: Schema = {
   username: {
-    ...searchUserSchema,
+    ...searchUserSchema.username,
     in: ["params"],
   },
 };

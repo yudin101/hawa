@@ -1,5 +1,6 @@
 import pool from "../config/db";
 import { Cart } from "../types/cart";
+import { generateQueryString } from "../utils/generateQueryString.util";
 
 export const findCart = async (userId: string): Promise<Cart[]> => {
   const result = await pool.query(
@@ -28,4 +29,38 @@ export const findCart = async (userId: string): Promise<Cart[]> => {
   );
 
   return result.rows;
+};
+
+export const createCart = async (userId: string) => {
+  const result = await pool.query(
+    generateQueryString(
+      "carts",
+      `INSERT INTO carts (user_id)
+      VALUES ($1)
+      ON CONFLICT (user_id)
+      DO UPDATE SET last_modified = NOW()`,
+    ),
+    [userId],
+  );
+
+  return result.rows[0];
+};
+
+export const insertToCart = async (cartItemData: {
+  cartId: string;
+  productId: string;
+  quantity: string;
+}) => {
+  const { cartId, productId, quantity } = cartItemData;
+
+  const result = await pool.query(
+    generateQueryString("cart_items",
+      `INSERT INTO cart_items (
+        cart_id,
+        product_id,
+        quantity
+      ) VALUES ($1, $2, $3)`),
+    [cartId, productId, quantity]
+  )
+  return result.rows[0]
 };

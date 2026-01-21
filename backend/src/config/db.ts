@@ -1,5 +1,8 @@
-import { Pool } from "pg";
+import { Pool, types } from "pg";
 import env from "./env";
+
+// Converting any number values returned from db into string
+types.setTypeParser(23, (val) => val.toString());
 
 const pool = new Pool({
   user: env.DB_USER,
@@ -15,13 +18,13 @@ export const initializeSchema = async (): Promise<void> => {
       CREATE TABLE IF NOT EXISTS roles (
         id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
         role VARCHAR(30) UNIQUE NOT NULL
-    );`
+    );`;
 
     const categories = `
       CREATE TABLE IF NOT EXISTS categories (
         id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
         category VARCHAR(50) UNIQUE NOT NULL
-    );`
+    );`;
 
     const addresses = `
       CREATE TABLE IF NOT EXISTS addresses (
@@ -29,7 +32,7 @@ export const initializeSchema = async (): Promise<void> => {
         district VARCHAR(50) NOT NULL,
         municipality VARCHAR(50) NOT NULL,
         street_name VARCHAR(50) NOT NULL
-    );`
+    );`;
 
     const users = `
       CREATE TABLE IF NOT EXISTS users (
@@ -41,7 +44,7 @@ export const initializeSchema = async (): Promise<void> => {
         email VARCHAR(100) UNIQUE NOT NULL,
         address_id BIGINT NOT NULL REFERENCES addresses(id),
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );`
+    );`;
 
     const refreshTokens = `
       CREATE TABLE IF NOT EXISTS refresh_tokens (
@@ -49,7 +52,7 @@ export const initializeSchema = async (): Promise<void> => {
         user_id BIGINT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
         expires_at TIMESTAMPTZ NOT NULL,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      );`
+      );`;
 
     const products = `
       CREATE TABLE IF NOT EXISTS products (
@@ -61,7 +64,7 @@ export const initializeSchema = async (): Promise<void> => {
         seller_id BIGINT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
         available_units BIGINT NOT NULL,
         price NUMERIC(10, 2) NOT NULL
-    );`
+    );`;
 
     const carts = `
       CREATE TABLE IF NOT EXISTS carts (
@@ -70,7 +73,7 @@ export const initializeSchema = async (): Promise<void> => {
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         last_modified TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         UNIQUE (user_id)
-    );`
+    );`;
 
     const cartItems = `
       CREATE TABLE IF NOT EXISTS cart_items (
@@ -79,7 +82,7 @@ export const initializeSchema = async (): Promise<void> => {
         product_id BIGINT NOT NULL REFERENCES products (id),
         quantity INTEGER NOT NULL,
         UNIQUE (cart_id, product_id)
-    );`
+    );`;
 
     const orders = `
       CREATE TABLE IF NOT EXISTS orders (
@@ -90,7 +93,7 @@ export const initializeSchema = async (): Promise<void> => {
         total_price NUMERIC(10, 2) NOT NULL,
         delivery_address_id BIGINT NOT NULL REFERENCES addresses (id),
         payment_method VARCHAR(50) NOT NULL
-    );`
+    );`;
 
     const orderItems = `
       CREATE TABLE IF NOT EXISTS order_items (
@@ -101,7 +104,7 @@ export const initializeSchema = async (): Promise<void> => {
         unit_price NUMERIC(10, 2) NOT NULL,
         total_item_price NUMERIC(10, 2) NOT NULL,
         UNIQUE (order_id, product_id)
-    );`
+    );`;
 
     const updateFunction = `
       CREATE OR REPLACE FUNCTION set_last_modified_timestamp()
@@ -111,7 +114,7 @@ export const initializeSchema = async (): Promise<void> => {
         RETURN NEW;
       END;
       $$ language 'plpgsql';
-    `
+    `;
 
     const cartUpdateTrigger = `
       DROP TRIGGER IF EXISTS set_cart_timestamp ON carts;
@@ -120,15 +123,24 @@ export const initializeSchema = async (): Promise<void> => {
       BEFORE UPDATE ON carts
       FOR EACH ROW
       EXECUTE PROCEDURE set_last_modified_timestamp();
-    `
+    `;
 
-    const tableQueries = roles + categories + addresses + users + refreshTokens + products + carts + cartItems + orders + orderItems;
+    const tableQueries =
+      roles +
+      categories +
+      addresses +
+      users +
+      refreshTokens +
+      products +
+      carts +
+      cartItems +
+      orders +
+      orderItems;
     const updateTriggerQueies = updateFunction + cartUpdateTrigger;
 
     const finalQuery = tableQueries + updateTriggerQueies;
 
     await pool.query(finalQuery);
-
   } catch (err) {
     console.error(err);
     process.exit(1);

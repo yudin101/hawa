@@ -17,5 +17,6 @@ export const addToCartSchema: Schema = {
       },
       errorMessage: "Quantity must be an integer between 1 and 99",
     },
+    trim: true,
   },
 };

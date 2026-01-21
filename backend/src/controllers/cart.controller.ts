@@ -43,6 +43,17 @@ export const addToCart = catchAsync(async (req: Request, res: Response) => {
   }
 
   const { id: cartId } = await createCart(userId);
+  const fetchedCart = await findCart(userId);
+
+  const productExists = fetchedCart.find(
+    (item) => item.productId === productId,
+  );
+
+  if (productExists) {
+    res.status(409).json({ error: "Product Already Exists in Cart" });
+    return;
+  }
+
   const addedItem = await insertToCart({ productId, quantity, cartId });
 
   res.status(200).json({ addedItem: addedItem });

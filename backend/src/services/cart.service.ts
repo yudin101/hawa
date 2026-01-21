@@ -1,8 +1,8 @@
 import pool from "../config/db";
-import { Cart } from "../types/cart";
+import { CartItems } from "../types/cart";
 import { generateQueryString } from "../utils/generateQueryString.util";
 
-export const findCart = async (userId: string): Promise<Cart[]> => {
+export const findCart = async (userId: string): Promise<CartItems[]> => {
   const result = await pool.query(
     `SELECT
       c.id AS "cartId",
@@ -54,13 +54,16 @@ export const insertToCart = async (cartItemData: {
   const { cartId, productId, quantity } = cartItemData;
 
   const result = await pool.query(
-    generateQueryString("cart_items",
+    generateQueryString(
+      "cart_items",
       `INSERT INTO cart_items (
         cart_id,
         product_id,
         quantity
-      ) VALUES ($1, $2, $3)`),
-    [cartId, productId, quantity]
-  )
-  return result.rows[0]
+      ) VALUES ($1, $2, $3)`,
+    ),
+    [cartId, productId, quantity],
+  );
+
+  return result.rows[0];
 };

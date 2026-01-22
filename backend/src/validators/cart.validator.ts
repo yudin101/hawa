@@ -20,3 +20,9 @@ export const addToCartSchema: Schema = {
     trim: true,
   },
 };
+
+export const deleteFromCartSchema: Schema = {
+  productId: {
+    ...addToCartSchema.productId,
+  },
+};

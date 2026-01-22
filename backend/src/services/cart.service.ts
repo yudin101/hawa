@@ -67,3 +67,16 @@ export const insertToCart = async (cartItemData: {
 
   return result.rows[0];
 };
+
+export const removeFromCart = async (cartItemData: {
+  cartId: string;
+  productId: string;
+}) => {
+  const { cartId, productId } = cartItemData;
+
+  await pool.query(
+    `DELETE FROM cart_items
+    WHERE cart_id = $1 AND product_id = $2`,
+    [cartId, productId],
+  );
+};

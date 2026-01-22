@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../utils/catchAsync.util";
 import { findUser } from "../services/user.service";
-import { findCart, createCart, insertToCart } from "../services/cart.service";
+import { findCart, createCart, insertToCart, removeFromCart } from "../services/cart.service";
 import { matchedData } from "express-validator";
 import { findProduct } from "../services/product.service";
 
@@ -24,7 +24,6 @@ export const addToCart = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.id as string;
 
   const fetchedProduct = await findProduct({ id: productId });
-
   if (!fetchedProduct) {
     res.status(404).json({ error: "Product Not Found" });
     return;
@@ -59,3 +58,33 @@ export const addToCart = catchAsync(async (req: Request, res: Response) => {
   res.status(200).json({ addedItem: addedItem });
   return;
 });
+
+export const deleteFromCart = catchAsync(
+  async (req: Request, res: Response) => {
+    const userId = req.user?.id as string;
+    const { productId } = matchedData(req);
+
+    const fetchedProduct = await findProduct({ id: productId });
+    if (!fetchedProduct) {
+      res.status(404).json({ error: "Product Not Found" });
+      return;
+    }
+
+    const fetchedCart = await findCart(userId);
+    const cartId = fetchedCart[0]?.cartId as string;
+
+    const productExists = fetchedCart.find(
+      (item) => item.productId === productId,
+    );
+
+    if (!productExists) {
+      res.status(404).json({ error: "Product Not Found in Cart" });
+      return;
+    }
+
+    await removeFromCart({ productId, cartId });
+
+    res.status(200).json({ message: "Product Removed from Cart" });
+    return;
+  },
+);

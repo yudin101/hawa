@@ -102,7 +102,6 @@ export const initializeSchema = async (): Promise<void> => {
         product_id BIGINT NOT NULL REFERENCES products (id),
         quantity INTEGER NOT NULL,
         unit_price NUMERIC(10, 2) NOT NULL,
-        total_item_price NUMERIC(10, 2) NOT NULL,
         UNIQUE (order_id, product_id)
     );`;
 

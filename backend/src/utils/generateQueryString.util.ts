@@ -1,5 +1,11 @@
 export const generateQueryString = (
-  table: "users" | "addresses" | "categories" | "products" | "carts" | "cart_items",
+  table:
+    | "users"
+    | "addresses"
+    | "categories"
+    | "products"
+    | "carts"
+    | "cart_items",
   mainQueryString: string,
 ) => {
   const userSelectQuery = `
@@ -53,7 +59,7 @@ export const generateQueryString = (
     SELECT
       id,
       user_id AS "userId"
-    FROM new_table`
+    FROM new_table`;
 
   const cartItemsSelectQuery = `
     SELECT
@@ -75,7 +81,7 @@ export const generateQueryString = (
     LEFT JOIN carts c ON c.id = n.cart_id
     LEFT JOIN products p ON p.id = n.product_id
     LEFT JOIN categories ct ON ct.id = p.category_id
-    LEFT JOIN users u ON u.id = p.seller_id`
+    LEFT JOIN users u ON u.id = p.seller_id`;
 
   const tableRelation = {
     users: userSelectQuery,

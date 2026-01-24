@@ -6,7 +6,10 @@ import {
   cancelOrder,
 } from "../controllers/order.controller";
 import { authenticate } from "../middlewares/authenticate.middleware";
-import { getOrdersSchema } from "../validators/order.validator";
+import {
+  cancelOrderSchema,
+  getOrdersSchema,
+} from "../validators/order.validator";
 
 const router = Router();
 
@@ -19,6 +22,11 @@ router.get(
 
 // router.post("/new", validateSchema(), placeOrder);
 
-// router.post("/cancel", validateSchema(), cancelOrder);
+router.patch(
+  "/cancel",
+  validateSchema(cancelOrderSchema),
+  authenticate,
+  cancelOrder,
+);
 
 export default router;

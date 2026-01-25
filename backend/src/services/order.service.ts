@@ -1,6 +1,5 @@
 import pool from "../config/db";
 import { NestedOrderItems, FlatOrder, NestedOrder } from "../types/order";
-import { generateQueryString } from "../utils/generateQueryString.util";
 
 export const findOrdersWithItems = async (
   userId: string,
@@ -167,4 +166,62 @@ export const changeOrderStatus = async (
       client.release();
     }
   }
+};
+
+interface Products {
+  id: string;
+  name: string;
+  availableUnits: string;
+  quantity: string;
+}
+
+export const findMissingProducts = async (
+  items: { productId: string; quantity: string }[],
+): Promise<{
+  missingIds: string[];
+  products: Products[];
+}> => {
+  const productIds = items.map((item) => item.productId);
+
+  const { rows: products } = await pool.query(
+    `SELECT
+      id,
+      name,
+      available_units AS "availableUnits",
+      quantity
+    FROM products
+    WHERE id = ANY($1)`,
+    [productIds],
+  );
+
+  let missingIds: string[] = [];
+
+  if (products.length !== productIds.length) {
+    const foundIds = products.map((item) => item.productId);
+    missingIds = productIds.filter((id) => !foundIds.includes(id));
+  }
+
+  return { missingIds, products };
+};
+
+export const checkStock = async (
+  items: { productId: string; quantity: string }[],
+  products: Products[],
+): Promise<Products[]> => {
+  const insufficient = [];
+
+  for (const item of items) {
+    const product = products.find((p) => p.id === item.productId);
+
+    if (product!.availableUnits < item.quantity) {
+      insufficient.push({
+        id: product!.id,
+        name: product!.name,
+        availableUnits: product!.availableUnits,
+        quantity: product!.quantity,
+      });
+    }
+  }
+
+  return insufficient;
 };

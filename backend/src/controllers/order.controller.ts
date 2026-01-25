@@ -5,8 +5,11 @@ import {
   findOrder,
   findOrdersWithItems,
   changeOrderStatus,
+  findMissingProducts,
+  checkStock,
 } from "../services/order.service";
 import { ROLES } from "../constants/roles";
+import { findAddress } from "../services/address.service";
 
 export const getOrders = catchAsync(async (req: Request, res: Response) => {
   const currentUserId = req.user?.id as string;
@@ -26,7 +29,35 @@ export const getOrders = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const placeOrder = catchAsync(async (req: Request, res: Response) => {
-  const { } = matchedData(req);
+  const currentUserId = req.user!.id;
+  const { items, paymentMethod, deliveryAddressId } = matchedData(req);
+  const { missingIds, products } = await findMissingProducts(items);
+
+  if (missingIds.length > 0) {
+    res
+      .status(404)
+      .json({ error: "Product Not Found", missingIds: missingIds });
+    return;
+  }
+
+  const insufficientProducts = await checkStock(items, products);
+
+  if (insufficientProducts.length > 0) {
+    res.status(409).json({
+      error: "Insufficient Stock",
+      insufficientProducts: insufficientProducts,
+    });
+    return;
+  }
+
+  if (deliveryAddressId) {
+    const deliveryAddress = findAddress("id", { addressId: deliveryAddressId });
+
+    if (!deliveryAddress) {
+      res.status(404).json({ error: "Address Not Found" });
+      return;
+    }
+  }
 });
 
 export const cancelOrder = catchAsync(async (req: Request, res: Response) => {

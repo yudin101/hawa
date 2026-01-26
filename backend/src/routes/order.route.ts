@@ -9,23 +9,24 @@ import { authenticate } from "../middlewares/authenticate.middleware";
 import {
   cancelOrderSchema,
   getOrdersSchema,
+  placeOrderSchema,
 } from "../validators/order.validator";
 
 const router = Router();
 
 router.get(
   "/myorders",
-  validateSchema(getOrdersSchema),
   authenticate,
+  validateSchema(getOrdersSchema),
   getOrders,
 );
 
-// router.post("/new", validateSchema(), placeOrder);
+router.post("/new", authenticate, validateSchema(placeOrderSchema), placeOrder);
 
 router.patch(
   "/cancel",
-  validateSchema(cancelOrderSchema),
   authenticate,
+  validateSchema(cancelOrderSchema),
   cancelOrder,
 );
 

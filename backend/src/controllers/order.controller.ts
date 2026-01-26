@@ -7,6 +7,8 @@ import {
   changeOrderStatus,
   findMissingProducts,
   checkStock,
+  findTotalPrice,
+  createOrder,
 } from "../services/order.service";
 import { ROLES } from "../constants/roles";
 import { findAddress } from "../services/address.service";
@@ -29,9 +31,9 @@ export const getOrders = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const placeOrder = catchAsync(async (req: Request, res: Response) => {
-  const currentUserId = req.user!.id;
-  const { items, paymentMethod, deliveryAddressId } = matchedData(req);
-  const { missingIds, products } = await findMissingProducts(items);
+  const userId = req.user!.id;
+  const { orderItems, paymentMethod, deliveryAddressId } = matchedData(req);
+  const { missingIds, products } = await findMissingProducts(orderItems);
 
   if (missingIds.length > 0) {
     res
@@ -40,7 +42,7 @@ export const placeOrder = catchAsync(async (req: Request, res: Response) => {
     return;
   }
 
-  const insufficientProducts = await checkStock(items, products);
+  const insufficientProducts = await checkStock(orderItems, products);
 
   if (insufficientProducts.length > 0) {
     res.status(409).json({
@@ -50,14 +52,27 @@ export const placeOrder = catchAsync(async (req: Request, res: Response) => {
     return;
   }
 
-  if (deliveryAddressId) {
-    const deliveryAddress = findAddress("id", { addressId: deliveryAddressId });
+  const totalPrice = findTotalPrice(orderItems, products);
 
-    if (!deliveryAddress) {
-      res.status(404).json({ error: "Address Not Found" });
-      return;
-    }
+  const deliveryAddress = await findAddress("id", { addressId: deliveryAddressId });
+
+  if (!deliveryAddress) {
+    res.status(404).json({ error: "Address Not Found" });
+    return;
   }
+
+  const order = await createOrder({
+    userId,
+    status: "PENDING",
+    totalPrice,
+    deliveryAddressId,
+    paymentMethod,
+    products,
+    orderItems,
+  });
+
+  res.status(200).json({ message: "Order Placed", order: order });
+  return;
 });
 
 export const cancelOrder = catchAsync(async (req: Request, res: Response) => {
@@ -78,12 +93,12 @@ export const cancelOrder = catchAsync(async (req: Request, res: Response) => {
     return;
   }
 
-  if (order.status !== "pending") {
+  if (order.status !== "PENDING") {
     res.status(409).json({ error: "Order cannot be cancelled" });
     return;
   }
 
-  await changeOrderStatus(targetUserId, orderId, "cancelled");
+  await changeOrderStatus(targetUserId, orderId, "CANCELLED");
 
   res.status(200).json({ message: "Order Cancelled" });
   return;

@@ -30,10 +30,10 @@ export const searchProductSchema: Schema = {
 export const getProductSchema: Schema = {
   id: {
     in: ["params"],
+    trim: true,
     isInt: {
       errorMessage: "Product ID must be a integer",
     },
-    trim: true,
   },
 };
 
@@ -109,6 +109,7 @@ export const addProductSchema: Schema = {
   },
   availableUnits: {
     in: ["body"],
+    trim: true,
     isInt: {
       options: {
         min: 0,

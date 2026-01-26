@@ -3,13 +3,14 @@ import { Schema } from "express-validator";
 export const addToCartSchema: Schema = {
   productId: {
     in: ["body"],
+    trim: true,
     isInt: {
       errorMessage: "Product ID must be an integer",
     },
-    trim: true,
   },
   quantity: {
     in: ["body"],
+    trim: true,
     isInt: {
       options: {
         min: 1,
@@ -17,7 +18,6 @@ export const addToCartSchema: Schema = {
       },
       errorMessage: "Quantity must be an integer between 1 and 99",
     },
-    trim: true,
   },
 };
 

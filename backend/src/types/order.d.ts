@@ -1,6 +1,6 @@
 export interface FlatOrder {
   orderId: string;
-  status: "pending" | "shipping" | "delivered" | "cancelled";
+  status: "PENDING" | "SHIPPING" | "DELIVERED" | "CANCELLED";
   orderDate: Date | string;
   totalPrice: string;
   deliveryAddressId: string;
@@ -8,6 +8,13 @@ export interface FlatOrder {
   municipality: string;
   streetName: string;
   paymentMethod: string;
+}
+
+export interface FlatOrderItem extends FlatOrder {
+  productId: string;
+  productName: string;
+  quantity: string;
+  unitPrice: string;
 }
 
 export interface NestedOrder
@@ -23,11 +30,16 @@ export interface NestedOrder
   };
 }
 
-export interface NestedOrderItems extends NestedOrder {
+export interface NestedOrderItem extends NestedOrder {
   items: {
     productId: string;
     productName: string;
     quantity: string;
     unitPrice: string;
   }[];
+}
+
+export interface ProductRequestItem {
+  productId: string;
+  quantity: string;
 }

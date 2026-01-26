@@ -88,11 +88,15 @@ export const initializeSchema = async (): Promise<void> => {
       CREATE TABLE IF NOT EXISTS orders (
         id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
         user_id BIGINT NOT NULL REFERENCES users (id),
-        status VARCHAR(30) NOT NULL,
+        status TEXT NOT NULL DEFAULT 'PENDING'
+          CONSTRAINT chk_order_status
+          CHECK (status IN ('PENDING', 'SHIPPING', 'DELIVERED', 'CANCELLED')),
         order_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         total_price NUMERIC(10, 2) NOT NULL,
         delivery_address_id BIGINT NOT NULL REFERENCES addresses (id),
-        payment_method VARCHAR(50) NOT NULL
+        payment_method TEXT NOT NULL
+          CONSTRAINT chk_order_payment_method
+          CHECK (payment_method IN ('CASH', 'ONLINE'))
     );`;
 
     const orderItems = `

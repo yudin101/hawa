@@ -19,6 +19,7 @@ export const searchUserSchema: Schema = {
   page: {
     in: ["query"],
     optional: true,
+    trim: true,
     isInt: {
       options: { min: 1 },
       errorMessage: "Page number must be greater than zero",
@@ -28,6 +29,7 @@ export const searchUserSchema: Schema = {
   limit: {
     in: ["query"],
     optional: true,
+    trim: true,
     isInt: {
       options: { min: 1, max: 100 },
       errorMessage: "Limit must be an integer between 1 and 100",
@@ -40,10 +42,10 @@ export const updateUserSchema: Schema = {
   id: {
     in: ["body"],
     optional: true,
+    trim: true,
     isInt: {
       errorMessage: "User Id must be a integer",
     },
-    trim: true,
   },
   username: {
     ...registerSchema.username,

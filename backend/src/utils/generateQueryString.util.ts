@@ -5,7 +5,8 @@ export const generateQueryString = (
     | "categories"
     | "products"
     | "carts"
-    | "cart_items",
+    | "cart_items"
+    | "order_items",
   mainQueryString: string,
 ) => {
   const userSelectQuery = `
@@ -83,6 +84,26 @@ export const generateQueryString = (
     LEFT JOIN categories ct ON ct.id = p.category_id
     LEFT JOIN users u ON u.id = p.seller_id`;
 
+  const orderItemsSelectQuery = `
+    SELECT
+      o.id AS "orderId",
+      o.status,
+      o.order_date AS "orderDate",
+      o.total_price AS "totalPrice",
+      o.delivery_address_id AS "deliveryAddressId",
+      a.district,
+      a.municipality,
+      a.street_name AS "streetName",
+      o.payment_method AS "paymentMethod",
+      oi.product_id AS "productId",
+      p.name AS "productName",
+      oi.quantity,
+      oi.unit_price AS "unitPrice"
+    FROM new_table oi
+    INNER JOIN products p ON oi.product_id = p.id
+    INNER JOIN orders o ON oi.order_id = o.id
+    INNER JOIN addresses a ON o.delivery_address_id = a.id`
+
   const tableRelation = {
     users: userSelectQuery,
     addresses: addressSelectQuery,
@@ -90,6 +111,7 @@ export const generateQueryString = (
     products: productsSelectQuery,
     carts: cartsSelectQuery,
     cart_items: cartItemsSelectQuery,
+    order_items: orderItemsSelectQuery,
   };
 
   return `WITH new_table AS (

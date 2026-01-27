@@ -47,7 +47,7 @@ export const addCategory = catchAsync(async (req: Request, res: Response) => {
 export const updateCategory = catchAsync(
   async (req: Request, res: Response) => {
     const { id: categoryId, category, confirmationPassword } = matchedData(req);
-    const currentUserId: string = req.user?.id as string;
+    const currentUserId: string = req.user!.id;
 
     if (!(await compareHash(confirmationPassword, currentUserId))) {
       res.status(401).json({ error: "Invalid Credentials" });
@@ -80,7 +80,7 @@ export const updateCategory = catchAsync(
 export const deleteCategory = catchAsync(
   async (req: Request, res: Response) => {
     const { id: categoryId, confirmationPassword } = matchedData(req);
-    const currentUserId: string = req.user?.id as string;
+    const currentUserId: string = req.user!.id;
 
     if (!(await compareHash(confirmationPassword, currentUserId))) {
       res.status(401).json({ error: "Invalid Credentials" });

@@ -58,7 +58,7 @@ export const updateAddress = catchAsync(
       streetName,
       confirmationPassword,
     } = matchedData(req);
-    const currentUserId: string = req.user?.id as string;
+    const currentUserId: string = req.user!.id;
 
     if (!(await compareHash(confirmationPassword, currentUserId))) {
       res.status(401).json({ error: "Invalid Credentials" });
@@ -95,7 +95,7 @@ export const updateAddress = catchAsync(
 
 export const deleteAddress = catchAsync(async (req: Request, res: Response) => {
   const { id: addressId, confirmationPassword } = matchedData(req);
-  const currentUserId: string = req.user?.id as string;
+  const currentUserId: string = req.user!.id;
 
   if (!(await compareHash(confirmationPassword, currentUserId))) {
     res.status(401).json({ error: "Invalid Credentials" });

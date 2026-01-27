@@ -103,8 +103,8 @@ export const addProduct = catchAsync(async (req: Request, res: Response) => {
     availableUnits,
     price,
   } = matchedData(req);
-  const currentUserId = req.user?.id as string;
-  const currentUserRoleId = req.user?.roleId as string;
+  const currentUserId = req.user!.id;
+  const currentUserRoleId = req.user!.roleId;
   let targetUserId = currentUserId;
 
   if (!(await findCategory({ categoryId }))) {
@@ -172,8 +172,8 @@ export const updateProduct = catchAsync(async (req: Request, res: Response) => {
     price,
     confirmationPassword,
   } = matchedData(req);
-  const currentUserId: string = req.user?.id as string;
-  const currentUserRoleId: string = req.user?.roleId as string;
+  const currentUserId: string = req.user!.id;
+  const currentUserRoleId: string = req.user!.roleId;
   let targetUserId;
 
   if (!(await compareHash(confirmationPassword, currentUserId))) {
@@ -260,8 +260,8 @@ export const updateProduct = catchAsync(async (req: Request, res: Response) => {
 
 export const deleteProduct = catchAsync(async (req: Request, res: Response) => {
   const { id, confirmationPassword } = matchedData(req);
-  const currentUserId: string = req.user?.id as string;
-  const currentUserRoleId: string = req.user?.roleId as string;
+  const currentUserId: string = req.user!.id;
+  const currentUserRoleId: string = req.user!.roleId;
 
   if (!(await compareHash(confirmationPassword, currentUserId))) {
     res.status(401).json({ error: "Invalid Credentials" });

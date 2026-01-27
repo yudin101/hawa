@@ -6,7 +6,7 @@ import { matchedData } from "express-validator";
 import { findProduct } from "../services/product.service";
 
 export const getCart = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id as string;
+  const userId = req.user!.id;
 
   if (!(await findUser("id", userId))) {
     res.status(404).json({ error: "User Not Found" });
@@ -21,7 +21,7 @@ export const getCart = catchAsync(async (req: Request, res: Response) => {
 
 export const addToCart = catchAsync(async (req: Request, res: Response) => {
   const { productId, quantity } = matchedData(req);
-  const userId = req.user?.id as string;
+  const userId = req.user!.id;
 
   const fetchedProduct = await findProduct({ id: productId });
   if (!fetchedProduct) {
@@ -61,7 +61,7 @@ export const addToCart = catchAsync(async (req: Request, res: Response) => {
 
 export const deleteFromCart = catchAsync(
   async (req: Request, res: Response) => {
-    const userId = req.user?.id as string;
+    const userId = req.user!.id;
     const { productId } = matchedData(req);
 
     const fetchedProduct = await findProduct({ id: productId });

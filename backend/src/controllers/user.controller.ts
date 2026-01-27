@@ -48,8 +48,8 @@ export const updateUser = catchAsync(
       confirmationPassword,
     } = matchedData(req);
 
-    const currentUserId: string = req.user?.id as string;
-    const isAdmin = req.user?.roleId === ROLES.ADMIN;
+    const currentUserId: string = req.user!.id;
+    const isAdmin = req.user!.roleId;
 
     if (
       !(await findUser("id", currentUserId)) ||
@@ -93,8 +93,8 @@ export const changeUserType = (roleIdToConvert: string) => {
   return catchAsync(async (req: Request, res: Response): Promise<void> => {
     const { id: requestUserId, confirmationPassword } = matchedData(req);
 
-    const currentUserId: string = req.user?.id as string;
-    const currentUserRoleId: string = req.user?.roleId as string;
+    const currentUserId: string = req.user!.id;
+    const currentUserRoleId: string = req.user!.roleId;
     const isAdmin = currentUserRoleId === ROLES.ADMIN;
 
     if (
@@ -134,8 +134,8 @@ export const deleteUser = catchAsync(
   async (req: Request, res: Response): Promise<void> => {
     const { id: requestUserId, confirmationPassword } = matchedData(req);
 
-    const currentUserId: string = req.user?.id as string;
-    const isAdmin = req.user?.roleId === ROLES.ADMIN;
+    const currentUserId: string = req.user!.id;
+    const isAdmin = req.user!.roleId;
 
     if (
       !(await findUser("id", currentUserId)) ||

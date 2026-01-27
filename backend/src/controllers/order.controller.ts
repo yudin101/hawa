@@ -14,8 +14,8 @@ import { ROLES } from "../constants/roles";
 import { findAddress } from "../services/address.service";
 
 export const getOrders = catchAsync(async (req: Request, res: Response) => {
-  const currentUserId = req.user?.id as string;
-  const currentUserRoleId = req.user?.roleId as string;
+  const currentUserId = req.user!.id;
+  const currentUserRoleId = req.user!.roleId;
 
   const { userId: requestUserId, limit, page } = matchedData(req);
 
@@ -76,8 +76,8 @@ export const placeOrder = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const cancelOrder = catchAsync(async (req: Request, res: Response) => {
-  const currentUserId = req.user?.id as string;
-  const currentUserRoleId = req.user?.roleId as string;
+  const currentUserId = req.user!.id;
+  const currentUserRoleId = req.user!.roleId;
 
   const { userId: requestUserId, orderId } = matchedData(req);
 

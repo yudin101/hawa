@@ -347,14 +347,25 @@ export const findSellerItems = async (
       p.id AS "productId",
       p.name,
       p.body,
-      oi.quantity
+      oi.quantity,
       oi.unit_price AS "unitPrice"
-    FROM orders o
+    FROM (
+      SELECT
+        id,
+        status
+      FROM orders o
+      WHERE EXISTS (
+        SELECT 1 FROM order_items oi
+        INNER JOIN products p ON oi.product_id = p.id
+        WHERE oi.order_id = o.id AND p.seller_id = $1
+      )
+      ORDER BY id DESC
+      LIMIT $2 OFFSET $3
+    ) o
     INNER JOIN order_items oi ON o.id = oi.order_id
     INNER JOIN products p ON oi.product_id = p.id
     WHERE p.seller_id = $1
-    ORDER BY id DESC
-    LIMIT $2 OFFSET = $3`,
+    ORDER BY o.id DESC`,
     [targetUserId, limit, offset],
   );
 

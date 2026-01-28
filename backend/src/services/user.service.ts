@@ -3,6 +3,7 @@ import { ROLES } from "../constants/roles";
 import { User } from "../types/user";
 import bcrypt from "bcrypt";
 import { generateQueryString } from "../utils/generateQueryString.util";
+import { generateOffset } from "../utils/generateOffset.util";
 
 export const createUser = async (userData: {
   username: string;
@@ -88,7 +89,7 @@ export const fuzzyFindSeller = async (
   limit: number = 10,
 ) => {
   const searchTerm = `%${username}%`;
-  const offset = (page - 1) * limit;
+  const offset = generateOffset(page, limit);
 
   const result = await pool.query(
     `SELECT

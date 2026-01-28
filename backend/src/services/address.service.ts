@@ -1,9 +1,10 @@
 import pool from "../config/db";
 import { Address } from "../types/address";
+import { generateOffset } from "../utils/generateOffset.util";
 import { generateQueryString } from "../utils/generateQueryString.util";
 
 export const getAddress = async (page: number = 1, limit: number = 10) => {
-  const offset = (page - 1) * limit;
+  const offset = generateOffset(page, limit);
 
   const result = await pool.query(
     `SELECT
@@ -22,7 +23,7 @@ export const getAddress = async (page: number = 1, limit: number = 10) => {
     [limit, offset],
   );
 
-  return result.rows
+  return result.rows;
 };
 
 export const findAddress = async (
@@ -76,7 +77,7 @@ export const fuzzyFindAddress = async (
   limit: number = 10,
 ) => {
   const searchTermQueryReady = `%${searchTerm}%`;
-  const offset = (page - 1) * limit;
+  const offset = generateOffset(page, limit);
 
   const result = await pool.query(
     `SELECT

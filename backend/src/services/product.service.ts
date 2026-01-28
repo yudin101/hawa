@@ -1,5 +1,6 @@
 import pool from "../config/db";
 import { Product } from "../types/product";
+import { generateOffset } from "../utils/generateOffset.util";
 import { generateQueryString } from "../utils/generateQueryString.util";
 
 const selectQuery = `
@@ -31,7 +32,7 @@ export const getProducts = async (
   page: number = 1,
   limit: number = 10,
 ): Promise<Product[]> => {
-  const offset = (page - 1) * limit;
+  const offset = generateOffset(page, limit);
 
   const result = await pool.query(
     `${selectQuery}
@@ -78,7 +79,7 @@ export const fuzzyFindProduct = async (
   page: number = 1,
   limit: number = 10,
 ): Promise<(Product | undefined)[]> => {
-  const offset = (page - 1) * limit;
+  const offset = generateOffset(page, limit);
   const searchTermQuery = `%${searchTerm}%`;
 
   const result = await pool.query(
@@ -101,7 +102,7 @@ export const findProductsByColumn = async (
   limit: number = 10,
   page: number = 1,
 ): Promise<(Product | undefined)[]> => {
-  const offset = (page - 1) * limit;
+  const offset = generateOffset(page, limit);
 
   const result = await pool.query(
     `${selectQuery}

@@ -7,6 +7,7 @@ import {
   ProductRequestItem,
 } from "../types/order";
 import { Product } from "../types/product";
+import { generateOffset } from "../utils/generateOffset.util";
 import { generateQueryString } from "../utils/generateQueryString.util";
 
 export const nestOrderItems = (flatOrderItems: FlatOrderItem[]) => {
@@ -52,7 +53,7 @@ export const findOrdersWithItems = async (
   page: number = 1,
   orderId?: string,
 ): Promise<NestedOrderItem[]> => {
-  const offset = (page - 1) * limit;
+  const offset = generateOffset(page, limit);
   const queryParams = [userId, limit, offset];
 
   if (orderId) queryParams.push(orderId);
@@ -336,7 +337,7 @@ export const findSellerItems = async (
   limit: number = 10,
   page: number = 1,
 ) => {
-  const offset = (page - 1) * limit;
+  const offset = generateOffset(page, limit);
 
   const result = await pool.query(
     `SELECT

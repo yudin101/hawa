@@ -1,8 +1,9 @@
 import pool from "../config/db";
+import { generateOffset } from "../utils/generateOffset.util";
 import { generateQueryString } from "../utils/generateQueryString.util";
 
 export const getCategory = async (page: number = 1, limit: number = 10) => {
-  const offset = (page - 1) * limit;
+  const offset = generateOffset(page, limit);
   const result = await pool.query(
     `SELECT * FROM categories
     ORDER BY
@@ -42,7 +43,7 @@ export const fuzzyFindCategory = async (
   limit: number = 10,
 ) => {
   const querySearchTerm = `%${searchTerm}%`;
-  const offset = (page - 1) * limit;
+  const offset = generateOffset(page, limit);
 
   const result = await pool.query(
     `SELECT * FROM categories

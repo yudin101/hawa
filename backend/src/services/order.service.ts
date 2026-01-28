@@ -4,7 +4,7 @@ import {
   FlatOrderItem,
   NestedOrder,
   NestedOrderItem,
-  ProductRequestItem
+  ProductRequestItem,
 } from "../types/order";
 import { Product } from "../types/product";
 import { generateQueryString } from "../utils/generateQueryString.util";
@@ -187,7 +187,7 @@ export const findMissingProducts = async (
   missingIds: string[];
   products: Product[];
 }> => {
-  const productIds = [... new Set(items.map((item) => item.productId))];
+  const productIds = [...new Set(items.map((item) => item.productId))];
 
   const { rows: products } = await pool.query(
     `SELECT
@@ -329,4 +329,62 @@ export const createOrder = async (orderData: {
   } finally {
     client.release();
   }
+};
+
+export const findSellerItems = async (
+  targetUserId: string,
+  limit: number = 10,
+  page: number = 1,
+) => {
+  const offset = (page - 1) * limit;
+
+  const result = await pool.query(
+    `SELECT
+      o.id AS "orderId",
+      o.status,
+      oi.id AS "orderItemId",
+      p.id AS "productId",
+      p.name,
+      p.body,
+      oi.quantity
+      oi.unit_price AS "unitPrice"
+    FROM orders o
+    INNER JOIN order_items oi ON o.id = oi.order_id
+    INNER JOIN products p ON oi.product_id = p.id
+    WHERE p.seller_id = $1
+    ORDER BY id DESC
+    LIMIT $2 OFFSET = $3`,
+    [targetUserId, limit, offset],
+  );
+
+  const nested = result.rows.reduce<
+    Record<
+      string,
+      Omit<
+        NestedOrderItem,
+        "deliveryAddress" | "orderDate" | "totalPrice" | "paymentMethod"
+      >
+    >
+  >((acc, row) => {
+    if (!acc[row.orderId]) {
+      acc[row.orderId] = {
+        orderId: row.orderId,
+        status: row.status,
+        items: [],
+      };
+    }
+
+    acc[row.orderId]!.items.push({
+      productId: row.productId,
+      productName: row.name,
+      quantity: row.quantity,
+      unitPrice: row.unitPrice,
+    });
+
+    return acc;
+  }, {});
+
+  return Object.values(nested).sort((a, b) => {
+    return Number(b.orderId) - Number(a.orderId);
+  });
 };

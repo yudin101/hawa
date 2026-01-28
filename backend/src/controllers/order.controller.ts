@@ -4,6 +4,7 @@ import { matchedData } from "express-validator";
 import {
   findOrder,
   findOrdersWithItems,
+  findSellerItems,
   changeOrderStatus,
   findMissingProducts,
   checkStock,
@@ -30,6 +31,19 @@ export const getOrders = catchAsync(async (req: Request, res: Response) => {
   return;
 });
 
+export const getSellerOrders = catchAsync(
+  async (req: Request, res: Response) => {
+    const currentUserId = req.user!.id;
+
+    const { limit, page } = matchedData(req);
+
+    const result = await findSellerItems(currentUserId, limit, page);
+
+    res.status(200).json(result)
+    return;
+  },
+);
+
 export const placeOrder = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user!.id;
   const { orderItems, paymentMethod, deliveryAddressId } = matchedData(req);
@@ -54,7 +68,9 @@ export const placeOrder = catchAsync(async (req: Request, res: Response) => {
 
   const totalPrice = findTotalPrice(orderItems, products);
 
-  const deliveryAddress = await findAddress("id", { addressId: deliveryAddressId });
+  const deliveryAddress = await findAddress("id", {
+    addressId: deliveryAddressId,
+  });
 
   if (!deliveryAddress) {
     res.status(404).json({ error: "Address Not Found" });

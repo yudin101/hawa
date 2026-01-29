@@ -1,4 +1,5 @@
 import pool from "../config/db";
+import { OSTATUS } from "../constants/orderStatus";
 import {
   FlatOrder,
   FlatOrderItem,
@@ -141,7 +142,7 @@ export const changeOrderStatus = async (
   orderId: string,
   status: FlatOrder["status"],
 ) => {
-  if (status === "CANCELLED") {
+  if (status === OSTATUS.CANCELLED) {
     const client = await pool.connect();
 
     try {

@@ -13,6 +13,7 @@ import {
 } from "../services/order.service";
 import { ROLES } from "../constants/roles";
 import { findAddress } from "../services/address.service";
+import { OSTATUS } from "../constants/orderStatus";
 
 export const getOrders = catchAsync(async (req: Request, res: Response) => {
   const currentUserId = req.user!.id;
@@ -79,7 +80,7 @@ export const placeOrder = catchAsync(async (req: Request, res: Response) => {
 
   const order = await createOrder({
     userId,
-    status: "PENDING",
+    status: OSTATUS.PENDING,
     totalPrice,
     deliveryAddressId,
     paymentMethod,
@@ -109,12 +110,12 @@ export const cancelOrder = catchAsync(async (req: Request, res: Response) => {
     return;
   }
 
-  if (order.status !== "PENDING") {
+  if (order.status !== OSTATUS.PENDING) {
     res.status(409).json({ error: "Order cannot be cancelled" });
     return;
   }
 
-  await changeOrderStatus(targetUserId, orderId, "CANCELLED");
+  await changeOrderStatus(targetUserId, orderId, OSTATUS.CANCELLED);
 
   res.status(200).json({ message: "Order Cancelled" });
   return;

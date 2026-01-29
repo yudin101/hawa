@@ -1,5 +1,6 @@
 import { Pool, types } from "pg";
 import env from "./env";
+import { OSTATUS } from "../constants/orderStatus";
 
 // Converting any number values returned from db into string
 types.setTypeParser(23, (val) => val.toString());
@@ -84,13 +85,14 @@ export const initializeSchema = async (): Promise<void> => {
         UNIQUE (cart_id, product_id)
     );`;
 
+    const orderStatuses = Object.values(OSTATUS);
     const orders = `
       CREATE TABLE IF NOT EXISTS orders (
         id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
         user_id BIGINT NOT NULL REFERENCES users (id),
-        status TEXT NOT NULL DEFAULT 'PENDING'
+        status TEXT NOT NULL DEFAULT '${OSTATUS.PENDING}'
           CONSTRAINT chk_order_status
-          CHECK (status IN ('PENDING', 'SHIPPING', 'DELIVERED', 'CANCELLED')),
+          CHECK (status IN (${orderStatuses.map(s => `'${s}'`).join(`, `)})),
         order_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         total_price NUMERIC(10, 2) NOT NULL,
         delivery_address_id BIGINT NOT NULL REFERENCES addresses (id),

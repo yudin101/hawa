@@ -1,6 +1,8 @@
+import { OStatusType } from "../constants/orderStatus";
+
 export interface FlatOrder {
   orderId: string;
-  status: "PENDING" | "SHIPPING" | "DELIVERED" | "CANCELLED";
+  status: OStatusType;
   orderDate: Date | string;
   totalPrice: string;
   deliveryAddressId: string;

@@ -4,16 +4,17 @@ import {
   getOrders,
   getSellerOrders,
   placeOrder,
-  cancelOrder,
+  setOrderStatus,
 } from "../controllers/order.controller";
 import { authenticate } from "../middlewares/authenticate.middleware";
 import {
-  cancelOrderSchema,
+  setOrderStatusSchema,
   getOrdersSchema,
   placeOrderSchema,
 } from "../validators/order.validator";
 import { checkRole } from "../middlewares/checkRole.middleware";
 import { ROLES } from "../constants/roles";
+import { OSTATUS } from "../constants/orderStatus";
 
 const router = Router();
 
@@ -35,10 +36,26 @@ router.get(
 router.post("/new", authenticate, validateSchema(placeOrderSchema), placeOrder);
 
 router.patch(
+  "/shipping",
+  authenticate,
+  checkRole(ROLES.ADMIN),
+  validateSchema(setOrderStatusSchema),
+  setOrderStatus(OSTATUS.SHIPPING),
+);
+
+router.patch(
+  "/delivered",
+  authenticate,
+  checkRole(ROLES.ADMIN),
+  validateSchema(setOrderStatusSchema),
+  setOrderStatus(OSTATUS.DELIVERED),
+);
+
+router.patch(
   "/cancel",
   authenticate,
-  validateSchema(cancelOrderSchema),
-  cancelOrder,
+  validateSchema(setOrderStatusSchema),
+  setOrderStatus(OSTATUS.CANCELLED),
 );
 
 export default router;

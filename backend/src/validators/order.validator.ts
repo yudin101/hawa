@@ -71,7 +71,7 @@ export const placeOrderSchema: Schema = {
   },
 };
 
-export const cancelOrderSchema: Schema = {
+export const setOrderStatusSchema: Schema = {
   orderId: {
     in: ["body"],
     trim: true,

@@ -1,5 +1,5 @@
 import pool from "../config/db";
-import { OSTATUS } from "../constants/orderStatus";
+import { OSTATUS, OStatusType } from "../constants/orderStatus";
 import {
   FlatOrder,
   FlatOrderItem,
@@ -140,21 +140,21 @@ export const findOrder = async (
 export const changeOrderStatus = async (
   userId: string,
   orderId: string,
-  status: FlatOrder["status"],
+  status: OStatusType,
 ) => {
-  if (status === OSTATUS.CANCELLED) {
-    const client = await pool.connect();
+  const client = await pool.connect();
 
-    try {
-      await client.query(`BEGIN`);
+  try {
+    await client.query(`BEGIN`);
 
-      await client.query(
-        `UPDATE orders
-        SET status = 'cancelled'
+    await client.query(
+      `UPDATE orders
+        SET status = '${status}'
         WHERE id = $1`,
-        [orderId],
-      );
+      [orderId],
+    );
 
+    if (status === OSTATUS.CANCELLED) {
       const order = await findOrdersWithItems(userId, 1, 1, orderId);
       const orderItems = order[0]?.items;
 
@@ -172,14 +172,14 @@ export const changeOrderStatus = async (
         WHERE p.id = d.id`,
         [quantities, productIds],
       );
-
-      await client.query(`COMMIT`);
-    } catch (err) {
-      await client.query(`ROLLBACK`);
-      throw err;
-    } finally {
-      client.release();
     }
+
+    await client.query(`COMMIT`);
+  } catch (err) {
+    await client.query(`ROLLBACK`);
+    throw err;
+  } finally {
+    client.release();
   }
 };
 

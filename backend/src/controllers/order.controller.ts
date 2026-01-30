@@ -13,7 +13,7 @@ import {
 } from "../services/order.service";
 import { ROLES } from "../constants/roles";
 import { findAddress } from "../services/address.service";
-import { OSTATUS } from "../constants/orderStatus";
+import { OSTATUS, OStatusType } from "../constants/orderStatus";
 
 export const getOrders = catchAsync(async (req: Request, res: Response) => {
   const currentUserId = req.user!.id;
@@ -40,7 +40,7 @@ export const getSellerOrders = catchAsync(
 
     const result = await findSellerItems(currentUserId, limit, page);
 
-    res.status(200).json(result)
+    res.status(200).json(result);
     return;
   },
 );
@@ -92,31 +92,50 @@ export const placeOrder = catchAsync(async (req: Request, res: Response) => {
   return;
 });
 
-export const cancelOrder = catchAsync(async (req: Request, res: Response) => {
-  const currentUserId = req.user!.id;
-  const currentUserRoleId = req.user!.roleId;
+export const setOrderStatus = (action: OStatusType) => {
+  return catchAsync(async (req: Request, res: Response) => {
+    const currentUserId = req.user!.id;
+    const currentUserRoleId = req.user!.roleId;
 
-  const { userId: requestUserId, orderId } = matchedData(req);
+    const { userId: requestUserId, orderId } = matchedData(req);
 
-  let targetUserId = currentUserId;
-  if (currentUserRoleId === ROLES.ADMIN) {
-    targetUserId = requestUserId;
-  }
+    let targetUserId = currentUserId;
+    if (currentUserRoleId === ROLES.ADMIN) {
+      targetUserId = requestUserId;
+    }
 
-  const order = await findOrder(targetUserId, orderId);
+    const order = await findOrder(targetUserId, orderId);
 
-  if (!order) {
-    res.status(404).json({ error: "Order Not Found" });
+    if (!order) {
+      res.status(404).json({ error: "Order Not Found" });
+      return;
+    }
+
+    if (action === OSTATUS.CANCELLED && order.status !== OSTATUS.PENDING) {
+      res.status(409).json({ error: "Only pending orders can be cancelled" });
+      return;
+    }
+
+    if (order.status === action) {
+      res
+        .status(400)
+        .json({ error: `Order is already ${action.toLowerCase()}` });
+      return;
+    }
+
+    if (order.status === OSTATUS.DELIVERED) {
+      res.status(409).json({ error: "Cannot modify delivered order" });
+      return;
+    }
+
+    if (order.status === OSTATUS.CANCELLED) {
+      res.status(409).json({ error: "Cannot modify cancelled order" });
+      return;
+    }
+
+    await changeOrderStatus(targetUserId, orderId, action);
+
+    res.status(200).json({ message: `Order Status Changed To: ${action}` });
     return;
-  }
-
-  if (order.status !== OSTATUS.PENDING) {
-    res.status(409).json({ error: "Order cannot be cancelled" });
-    return;
-  }
-
-  await changeOrderStatus(targetUserId, orderId, OSTATUS.CANCELLED);
-
-  res.status(200).json({ message: "Order Cancelled" });
-  return;
-});
+  });
+};

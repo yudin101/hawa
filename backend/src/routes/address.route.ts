@@ -15,16 +15,23 @@ import {
   searchAddressSchema,
   updateAddressSchema,
 } from "../validators/address.validator";
+import { addressTag } from "../middlewares/swaggerTags.middleware";
 
 const router = Router();
 
-router.get("/search", validateSchema(searchAddressSchema), searchAddress);
+router.get(
+  "/search",
+  validateSchema(searchAddressSchema),
+  addressTag,
+  searchAddress,
+);
 
 router.post(
   "/add",
   authenticate,
   checkRole(ROLES.ADMIN),
   validateSchema(addAddressSchema),
+  addressTag,
   addAddress,
 );
 
@@ -33,6 +40,7 @@ router.patch(
   authenticate,
   checkRole(ROLES.ADMIN),
   validateSchema(updateAddressSchema),
+  addressTag,
   updateAddress,
 );
 
@@ -41,6 +49,7 @@ router.delete(
   authenticate,
   checkRole(ROLES.ADMIN),
   validateSchema(deleteAddressSchema),
+  addressTag,
   deleteAddress,
 );
 

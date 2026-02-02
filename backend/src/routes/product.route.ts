@@ -21,22 +21,30 @@ import { validateSchema } from "../middlewares/validation.middleware";
 import { authenticate } from "../middlewares/authenticate.middleware";
 import { checkRole } from "../middlewares/checkRole.middleware";
 import { ROLES } from "../constants/roles";
+import { productTag } from "../middlewares/swaggerTags.middleware";
 
 const router = Router();
 
-router.get("/search", validateSchema(searchProductSchema), searchProduct);
+router.get(
+  "/search",
+  validateSchema(searchProductSchema),
+  productTag,
+  searchProduct,
+);
 
-router.get("/:id", validateSchema(getProductSchema), getProduct);
+router.get("/:id", validateSchema(getProductSchema), productTag, getProduct);
 
 router.get(
-  "/seller/:username/",
+  "/seller/:username",
   validateSchema(getSellerProductSchema),
+  productTag,
   getSellerProducts,
 );
 
 router.get(
-  "/category/:category/",
+  "/category/:category",
   validateSchema(getCategoryProductSchema),
+  productTag,
   getCategoryProducts,
 );
 
@@ -45,6 +53,7 @@ router.post(
   authenticate,
   checkRole(ROLES.SELLER, ROLES.ADMIN),
   validateSchema(addProductSchema),
+  productTag,
   addProduct,
 );
 
@@ -53,6 +62,7 @@ router.patch(
   authenticate,
   checkRole(ROLES.SELLER, ROLES.ADMIN),
   validateSchema(updateProductSchema),
+  productTag,
   updateProduct,
 );
 
@@ -61,6 +71,7 @@ router.delete(
   authenticate,
   checkRole(ROLES.SELLER, ROLES.ADMIN),
   validateSchema(deleteProductSchema),
+  productTag,
   deleteProduct,
 );
 

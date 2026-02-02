@@ -8,19 +8,21 @@ import {
   logoutUser,
   refreshToken,
 } from "../controllers/auth.controller";
+import { authTag } from "../middlewares/swaggerTags.middleware";
 
 const router = Router();
 
 router.use("/register", registerRoutes);
 
-router.post("/login", validateSchema(loginSchema), loginUser);
+router.post("/login", validateSchema(loginSchema), authTag, loginUser);
 
-router.post("/refresh", validateSchema(refreshTokenSchema), refreshToken);
+router.post("/refresh", validateSchema(refreshTokenSchema), authTag, refreshToken);
 
 router.post(
   "/logout",
   authenticate,
   validateSchema(refreshTokenSchema),
+  authTag,
   logoutUser,
 );
 

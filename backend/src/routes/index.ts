@@ -1,4 +1,5 @@
 import { Router } from "express";
+import docsRoute from "./swagger.route"
 import authRoutes from "./auth.route";
 import userRoutes from "./user.route";
 import addressRoutes from "./address.route";
@@ -9,6 +10,7 @@ import orderRoutes from "./order.route";
 
 const router = Router();
 
+router.use("/docs", docsRoute);
 router.use("/auth", authRoutes);
 router.use("/user", userRoutes);
 router.use("/address", addressRoutes);

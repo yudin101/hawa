@@ -17,21 +17,20 @@ import { validateSchema } from "../middlewares/validation.middleware";
 import { authenticate } from "../middlewares/authenticate.middleware";
 import { ROLES } from "../constants/roles";
 import { checkRole } from "../middlewares/checkRole.middleware";
-import { userTag } from "../middlewares/swaggerTags.middleware";
 
 const router = Router();
 
 router.get(
   "/search/seller",
   validateSchema(searchUserSchema),
-  userTag,
+  /* #swagger.tags = ["User"] */
   searchUser,
 );
 
 router.get(
   "/:username",
   validateSchema(userWithUsernameSchema),
-  userTag,
+  /* #swagger.tags = ["User"] */
   getUser,
 );
 
@@ -39,7 +38,7 @@ router.patch(
   "/update",
   authenticate,
   validateSchema(updateUserSchema),
-  userTag,
+  /* #swagger.tags = ["User"] */
   updateUser,
 );
 
@@ -48,7 +47,7 @@ router.patch(
   authenticate,
   checkRole(ROLES.ADMIN),
   validateSchema(changeUserTypeSchema),
-  userTag,
+  /* #swagger.tags = ["User"] */
   changeUserType(ROLES.ADMIN),
 );
 
@@ -56,7 +55,7 @@ router.patch(
   "/upgrade/seller",
   authenticate,
   validateSchema(changeUserTypeSchema),
-  userTag,
+  /* #swagger.tags = ["User"] */
   changeUserType(ROLES.SELLER),
 );
 
@@ -64,7 +63,7 @@ router.patch(
   "/downgrade/customer",
   authenticate,
   validateSchema(changeUserTypeSchema),
-  userTag,
+  /* #swagger.tags = ["User"] */
   changeUserType(ROLES.CUSTOMER),
 );
 
@@ -72,7 +71,7 @@ router.delete(
   "/delete",
   authenticate,
   validateSchema(deleteUserSchema),
-  userTag,
+  /* #swagger.tags = ["User"] */
   deleteUser,
 );
 

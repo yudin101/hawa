@@ -10,17 +10,20 @@ import {
   addToCartSchema,
   deleteFromCartSchema,
 } from "../validators/cart.validator";
-import { cartTag } from "../middlewares/swaggerTags.middleware";
 
 const router = Router();
 
-router.get("/mycart", authenticate, cartTag, getCart);
+router.get(
+  "/mycart", 
+  authenticate, 
+  /* #swagger.tags = ["Cart"] */
+  getCart);
 
 router.post(
   "/add",
   authenticate,
   validateSchema(addToCartSchema),
-  cartTag,
+  /* #swagger.tags = ["Cart"] */
   addToCart,
 );
 
@@ -28,7 +31,7 @@ router.delete(
   "/delete",
   authenticate,
   validateSchema(deleteFromCartSchema),
-  cartTag,
+  /* #swagger.tags = ["Cart"] */
   deleteFromCart,
 );
 

@@ -15,14 +15,13 @@ import {
 import { checkRole } from "../middlewares/checkRole.middleware";
 import { ROLES } from "../constants/roles";
 import { authenticate } from "../middlewares/authenticate.middleware";
-import { categoryTag } from "../middlewares/swaggerTags.middleware";
 
 const router = Router();
 
 router.get(
   "/search",
   validateSchema(searchCategorySchema),
-  categoryTag,
+  /* #swagger.tags = ["Category"] */
   searchCategory,
 );
 
@@ -31,7 +30,7 @@ router.post(
   authenticate,
   checkRole(ROLES.ADMIN),
   validateSchema(addCategorySchema),
-  categoryTag,
+  /* #swagger.tags = ["Category"] */
   addCategory,
 );
 
@@ -40,7 +39,7 @@ router.patch(
   authenticate,
   checkRole(ROLES.ADMIN),
   validateSchema(updateCategorySchema),
-  categoryTag,
+  /* #swagger.tags = ["Category"] */
   updateCategory,
 );
 
@@ -49,7 +48,7 @@ router.delete(
   authenticate,
   checkRole(ROLES.ADMIN),
   validateSchema(deleteCategorySchema),
-  categoryTag,
+  /* #swagger.tags = ["Category"] */
   deleteCategory,
 );
 

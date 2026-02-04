@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "swagger": "ts-node src/config/swagger.ts",
+    "swagger": "ts-node src/swagger/swagger.ts",
     "dev": "npm run swagger && ts-node-dev --respawn --transpile-only --watch src src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js"

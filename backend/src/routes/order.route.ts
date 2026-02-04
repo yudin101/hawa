@@ -15,7 +15,6 @@ import {
 import { checkRole } from "../middlewares/checkRole.middleware";
 import { ROLES } from "../constants/roles";
 import { OSTATUS } from "../constants/orderStatus";
-import { orderTag } from "../middlewares/swaggerTags.middleware";
 
 const router = Router();
 
@@ -24,7 +23,7 @@ router.get(
   authenticate,
   checkRole(ROLES.SELLER),
   validateSchema(getOrdersSchema),
-  orderTag,
+  /* #swagger.tags = ["Order"] */
   getSellerOrders,
 );
 
@@ -32,7 +31,7 @@ router.get(
   "/myorders",
   authenticate,
   validateSchema(getOrdersSchema),
-  orderTag,
+  /* #swagger.tags = ["Order"] */
   getOrders,
 );
 
@@ -40,7 +39,7 @@ router.post(
   "/new",
   authenticate,
   validateSchema(placeOrderSchema),
-  orderTag,
+  /* #swagger.tags = ["Order"] */
   placeOrder,
 );
 
@@ -49,7 +48,7 @@ router.patch(
   authenticate,
   checkRole(ROLES.ADMIN),
   validateSchema(setOrderStatusSchema),
-  orderTag,
+  /* #swagger.tags = ["Order"] */
   setOrderStatus(OSTATUS.SHIPPING),
 );
 
@@ -58,7 +57,7 @@ router.patch(
   authenticate,
   checkRole(ROLES.ADMIN),
   validateSchema(setOrderStatusSchema),
-  orderTag,
+  /* #swagger.tags = ["Order"] */
   setOrderStatus(OSTATUS.DELIVERED),
 );
 
@@ -66,7 +65,7 @@ router.patch(
   "/cancel",
   authenticate,
   validateSchema(setOrderStatusSchema),
-  orderTag,
+  /* #swagger.tags = ["Order"] */
   setOrderStatus(OSTATUS.CANCELLED),
 );
 

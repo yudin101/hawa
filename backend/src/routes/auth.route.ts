@@ -8,21 +8,78 @@ import {
   logoutUser,
   refreshToken,
 } from "../controllers/auth.controller";
-import { authTag } from "../middlewares/swaggerTags.middleware";
 
 const router = Router();
 
 router.use("/register", registerRoutes);
 
-router.post("/login", validateSchema(loginSchema), authTag, loginUser);
+router.post(
+  "/login",
+  validateSchema(loginSchema),
 
-router.post("/refresh", validateSchema(refreshTokenSchema), authTag, refreshToken);
+  // #swagger.tags = ["Auth"]
+
+  /* #swagger.requestBody = {
+      description: "User Login",
+      required: true,
+      content: { 
+        "application/json": {
+          schema: { $ref: "#/components/schemas/UserLoginRequest" },
+          example: {
+            username: "yudin101",
+            password: "password123"
+          }
+        }
+      }
+  } */
+
+  /* #swagger.responses[200] = {
+    description: "OK"
+  } */
+
+  /* #swagger.responses[401] = {
+    description: "Unauthorized"
+  } */
+
+  loginUser,
+);
+
+router.post(
+  "/refresh",
+  validateSchema(refreshTokenSchema),
+
+  // #swagger.tags = ["Auth"]
+
+  // #swagger.security = [{ "refreshTokenAuth": [] }]
+
+  /* #swagger.responses[200] = {
+    description: "OK"
+  } */
+
+  /* #swagger.responses[403] = {
+    description: "Forbidden"
+  } */
+
+  /* #swagger.responses[401] = {
+    description: "Unauthorized"
+  } */
+
+  refreshToken,
+);
 
 router.post(
   "/logout",
   authenticate,
   validateSchema(refreshTokenSchema),
-  authTag,
+
+  // #swagger.tags = ["Auth"]
+  // #swagger.auto = false
+  // #swagger.security = [{ "bearerAuth": [] }, { "refreshTokenAuth": [] }]
+
+  /* #swagger.responses[200] = {
+    description: "OK"
+  } */
+
   logoutUser,
 );
 

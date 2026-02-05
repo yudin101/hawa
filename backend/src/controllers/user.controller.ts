@@ -59,6 +59,21 @@ export const updateUser = catchAsync(
       return;
     }
 
+    if (await findUser("username", username)) {
+      res.status(409).json({ error: "Username already exists" });
+      return;
+    }
+
+    if (await findUser("email", email)) {
+      res.status(409).json({ error: "Email already exists" });
+      return;
+    }
+
+    if (await findUser("phone_number", phoneNumber)) {
+      res.status(409).json({ error: "Phone number already exists" });
+      return;
+    }
+
     if (!(await compareHash(confirmationPassword, currentUserId))) {
       res.status(401).json({ error: "Invalid Credentials" });
       return;

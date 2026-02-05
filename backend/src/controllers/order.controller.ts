@@ -118,7 +118,7 @@ export const setOrderStatus = (action: OStatusType) => {
 
     if (order.status === action) {
       res
-        .status(400)
+        .status(409)
         .json({ error: `Order is already ${action.toLowerCase()}` });
       return;
     }

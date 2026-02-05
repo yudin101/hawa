@@ -30,7 +30,7 @@ export const addCategory = catchAsync(async (req: Request, res: Response) => {
   const { category } = matchedData(req);
 
   if (await findCategory({ category })) {
-    res.status(400).json({
+    res.status(409).json({
       error: "Category already exists",
     });
     return;

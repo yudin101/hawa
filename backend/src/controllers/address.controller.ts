@@ -32,7 +32,7 @@ export const addAddress = catchAsync(
     const { district, municipality, streetName } = matchedData(req);
 
     if (await findAddress("other", { district, municipality, streetName })) {
-      res.status(400).json({ error: "Address already exists" });
+      res.status(409).json({ error: "Address already exists" });
       return;
     }
 

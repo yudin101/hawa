@@ -140,7 +140,7 @@ export const addProduct = catchAsync(async (req: Request, res: Response) => {
     fetchedProduct.sellerId === targetUserId &&
     fetchedProduct.name === name
   ) {
-    res.status(400).json({ error: "Product Already Exists" });
+    res.status(409).json({ error: "Product Already Exists" });
     return;
   }
 

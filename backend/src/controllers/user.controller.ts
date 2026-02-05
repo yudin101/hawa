@@ -49,7 +49,7 @@ export const updateUser = catchAsync(
     } = matchedData(req);
 
     const currentUserId: string = req.user!.id;
-    const isAdmin = req.user!.roleId;
+    const isAdmin = req.user!.roleId === ROLES.ADMIN;
 
     if (
       !(await findUser("id", currentUserId)) ||
@@ -150,7 +150,7 @@ export const deleteUser = catchAsync(
     const { id: requestUserId, confirmationPassword } = matchedData(req);
 
     const currentUserId: string = req.user!.id;
-    const isAdmin = req.user!.roleId;
+    const isAdmin = req.user!.roleId === ROLES.ADMIN;
 
     if (
       !(await findUser("id", currentUserId)) ||

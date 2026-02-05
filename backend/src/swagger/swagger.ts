@@ -1,5 +1,6 @@
 import swaggerAutogenInit from "swagger-autogen";
 import { UserLoginRequest, UserRegisterRequest } from "./schemas/auth.swagger";
+import { UserUpdateRequest, UserChangeDeleteRequest } from "./schemas/user.swagger";
 
 const swaggerAutogen = swaggerAutogenInit({ openapi: "3.0.0" });
 
@@ -24,12 +25,14 @@ const doc = {
       refreshTokenAuth: {
         type: "apiKey",
         in: "cookie",
-        name: "refresh_token"
-      }
+        name: "refresh_token",
+      },
     },
     schemas: {
       UserLoginRequest: UserLoginRequest,
       UserRegisterRequest: UserRegisterRequest,
+      UserUpdateRequest: UserUpdateRequest,
+      UserChangeDeleteRequest: UserChangeDeleteRequest,
     },
   },
 };

@@ -37,6 +37,10 @@ router.post(
     description: "OK"
   } */
 
+  /* #swagger.responses[400] = {
+    description: "Bad Request"
+  } */
+
   /* #swagger.responses[404] = {
     description: "Not Found"
   } */
@@ -75,6 +79,10 @@ router.post(
 
   /* #swagger.responses[201] = {
     description: "OK"
+  } */
+
+  /* #swagger.responses[400] = {
+    description: "Bad Request"
   } */
 
   /* #swagger.responses[404] = {
@@ -118,6 +126,10 @@ router.post(
 
   /* #swagger.responses[201] = {
     description: "OK"
+  } */
+
+  /* #swagger.responses[400] = {
+    description: "Bad Request"
   } */
 
   /* #swagger.responses[401] = {

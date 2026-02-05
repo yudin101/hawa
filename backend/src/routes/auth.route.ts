@@ -41,6 +41,10 @@ router.post(
     description: "Unauthorized"
   } */
 
+  /* #swagger.responses[400] = {
+    description: "Bad Request"
+  } */
+
   loginUser,
 );
 
@@ -62,6 +66,10 @@ router.post(
 
   /* #swagger.responses[401] = {
     description: "Unauthorized"
+  } */
+
+  /* #swagger.responses[400] = {
+    description: "Bad Request"
   } */
 
   refreshToken,

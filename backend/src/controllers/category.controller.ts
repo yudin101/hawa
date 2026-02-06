@@ -59,6 +59,11 @@ export const updateCategory = catchAsync(
       return;
     }
 
+    if (await findCategory({ categoryId })) {
+      res.status(409).json({ error: "Category Already Exists" });
+      return;
+    }
+
     const { setClauses, queryValues } = generateSetClauses(
       ["id", "category"],
       [categoryId, category],

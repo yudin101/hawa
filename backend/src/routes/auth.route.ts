@@ -17,7 +17,7 @@ router.post(
   "/login",
   validateSchema(loginSchema),
 
-  // #swagger.tags = ["Auth"]
+  /* #swagger.tags = ["Auth"] */
 
   /* #swagger.requestBody = {
       description: "User Login",
@@ -25,10 +25,6 @@ router.post(
       content: { 
         "application/json": {
           schema: { $ref: "#/components/schemas/UserLoginRequest" },
-          example: {
-            username: "yudin101",
-            password: "password123"
-          }
         }
       }
   } */
@@ -52,9 +48,9 @@ router.post(
   "/refresh",
   validateSchema(refreshTokenSchema),
 
-  // #swagger.tags = ["Auth"]
+  /* #swagger.tags = ["Auth"] */
 
-  // #swagger.security = [{ "refreshTokenAuth": [] }]
+  /* #swagger.security = [{ "refreshTokenAuth": [] }] */
 
   /* #swagger.responses[200] = {
     description: "OK"
@@ -80,9 +76,9 @@ router.post(
   authenticate,
   validateSchema(refreshTokenSchema),
 
-  // #swagger.tags = ["Auth"]
-  // #swagger.auto = false
-  // #swagger.security = [{ "bearerAuth": [] }, { "refreshTokenAuth": [] }]
+  /* #swagger.tags = ["Auth"] */
+  /* #swagger.auto = false */
+  /* #swagger.security = [{ "bearerAuth": [] }, { "refreshTokenAuth": [] }] */
 
   /* #swagger.responses[200] = {
     description: "OK"

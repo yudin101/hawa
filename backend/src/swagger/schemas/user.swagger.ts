@@ -1,22 +1,20 @@
 export const UserUpdateRequest = {
-  type: "object",
-  required: ["id", "confirmationPassword"],
-  properties: {
-    id: { type: "string" },
-    username: { type: "string" },
-    newPassword: { type: "string", format: "password" },
-    confirmNewPassword: { type: "string", format: "password" },
-    email: { type: "string" },
-    phoneNumber: { type: "string" },
-    addressId: { type: "string" },
-  },
+  id: "1",
+  username: "yudin101",
+  newPassword: "password123",
+  confirmNewPassword: "password123",
+  email: "yudin101@example.com",
+  phoneNumber: "9800000000",
+  addressId: "1",
+  $confirmationPassword: "password123",
 };
 
 export const UserChangeDeleteRequest = {
-  type: "object",
-  required: ["confirmationPassword"],
-  properties: {
-    id: { type: "string" },
-    confirmationPassword: { type: "string", format: "password" },
-  },
+  id: "1",
+  $confirmationPassword: "password123",
+};
+
+export const UserToAdminRequest = {
+  $id: "1",
+  $confirmationPassword: "password123",
 };

@@ -21,14 +21,6 @@ router.post(
      content: {
        "application/json": {
          schema: { $ref: "#/components/schemas/UserRegisterRequest" },
-         example: {
-           username: "yudin101",
-           email: "yudin101@example.com",
-           password: "password123",
-           confirmPassword: "password123",
-           phoneNumber: "9800000000",
-           addressId: "1"
-         }
        }
      }
     } */
@@ -65,14 +57,6 @@ router.post(
      content: {
        "application/json": {
          schema: { $ref: "#/components/schemas/UserRegisterRequest" },
-         example: {
-           username: "yudin101",
-           email: "yudin101@example.com",
-           password: "password123",
-           confirmPassword: "password123",
-           phoneNumber: "9800000000",
-           addressId: "1"
-         }
        }
      }
     } */
@@ -112,14 +96,6 @@ router.post(
      content: {
        "application/json": {
          schema: { $ref: "#/components/schemas/UserRegisterRequest" },
-         example: {
-           username: "yudin101",
-           email: "yudin101@example.com",
-           password: "password123",
-           confirmPassword: "password123",
-           phoneNumber: "9800000000",
-           addressId: "1"
-         }
        }
      }
     } */

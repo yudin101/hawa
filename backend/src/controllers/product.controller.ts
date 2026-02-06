@@ -49,13 +49,8 @@ export const getSellerProducts = catchAsync(
 
     const fetchedUser = await findUser("username", username);
 
-    if (!fetchedUser) {
+    if (!fetchedUser || fetchedUser.roleId !== ROLES.SELLER) {
       res.status(404).json({ error: "User Not Found" });
-      return;
-    }
-
-    if (fetchedUser.roleId !== ROLES.SELLER) {
-      res.status(403).json({ error: "User Not Seller" });
       return;
     }
 

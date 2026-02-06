@@ -24,7 +24,7 @@ router.get(
   "/search/seller",
   validateSchema(searchUserSchema),
 
-  // #swagger.tags = ["User"]
+  /* #swagger.tags = ["User"] */
 
   /* #swagger.parameters["username"] = {
       in: "query",
@@ -48,6 +48,14 @@ router.get(
       required: false,
       type: "integer",
       example: 10
+  } */
+
+  /* #swagger.responses[200] = {
+      description: "OK"
+  } */
+
+  /* #swagger.responses[400] = {
+    description: "Bad Request"
   } */
 
   searchUser,
@@ -98,16 +106,6 @@ router.patch(
      content: {
        "application/json": {
          schema: { $ref: "#/components/schemas/UserUpdateRequest" },
-         example: {
-          id: "1",
-           username: "yudin101",
-           email: "yudin101@example.com",
-           newPassword: "password345",
-           confirmNewPassword: "password345",
-           phoneNumber: "9800000000",
-           addressId: "1",
-           confirmationPassword: "password123"
-        }
        }
      }
     } */
@@ -147,11 +145,7 @@ router.patch(
      required: true,
      content: {
        "application/json": {
-         schema: { $ref: "#/components/schemas/UserChangeDeleteRequest" },
-         example: {
-          id: "1",
-          confirmationPassword: "password123"
-        }
+         schema: { $ref: "#/components/schemas/UserToAdminRequest" },
        }
      }
     } */
@@ -199,10 +193,6 @@ router.patch(
      content: {
        "application/json": {
          schema: { $ref: "#/components/schemas/UserChangeDeleteRequest" },
-         example: {
-          id: "1",
-          confirmationPassword: "password123"
-        }
        }
      }
     } */
@@ -246,10 +236,6 @@ router.patch(
      content: {
        "application/json": {
          schema: { $ref: "#/components/schemas/UserChangeDeleteRequest" },
-         example: {
-          id: "1",
-          confirmationPassword: "password123"
-        }
        }
      }
     } */
@@ -293,10 +279,6 @@ router.delete(
      content: {
        "application/json": {
          schema: { $ref: "#/components/schemas/UserChangeDeleteRequest" },
-         example: {
-          id: "1",
-          confirmationPassword: "password123"
-        }
        }
      }
     } */

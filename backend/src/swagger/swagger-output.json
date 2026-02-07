@@ -36,10 +36,6 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UserLoginRequest"
-              },
-              "example": {
-                "username": "yudin101",
-                "password": "password123"
               }
             }
           }
@@ -1254,16 +1250,32 @@
         "description": "",
         "parameters": [
           {
-            "name": "authorization",
-            "in": "header",
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "required": false,
+            "example": 1,
             "schema": {
-              "type": "string"
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Items per page",
+            "required": false,
+            "example": 10,
+            "schema": {
+              "type": "integer"
             }
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
@@ -1271,21 +1283,39 @@
           "403": {
             "description": "Forbidden"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/api/order/myorders": {
-      "get": {
+      "post": {
         "tags": [
           "Order"
         ],
         "description": "",
         "parameters": [
           {
-            "name": "authorization",
-            "in": "header",
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "required": false,
+            "example": 1,
             "schema": {
-              "type": "string"
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Items per page",
+            "required": false,
+            "example": 10,
+            "schema": {
+              "type": "integer"
             }
           }
         ],
@@ -1293,8 +1323,27 @@
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Your Orders",
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetMyOrdersRequest"
+              }
+            }
           }
         }
       }
@@ -1305,27 +1354,34 @@
           "Order"
         ],
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "201": {
+            "description": "Created"
           },
-          "401": {
-            "description": "Unauthorized"
+          "400": {
+            "description": "Bad Request"
           },
           "404": {
             "description": "Not Found"
           },
           "409": {
-            "description": "Conflict"
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Place New Order",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderPlaceRequest"
+              }
+            }
           }
         }
       }
@@ -1336,30 +1392,37 @@
           "Order"
         ],
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
           },
           "409": {
-            "description": "Conflict"
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Change Order Status to Shipping",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderStatusRequest"
+              }
+            }
           }
         }
       }
@@ -1370,30 +1433,37 @@
           "Order"
         ],
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
           },
           "409": {
-            "description": "Conflict"
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Change Order Status to Delivered",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderStatusRequest"
+              }
+            }
           }
         }
       }
@@ -1404,18 +1474,12 @@
           "Order"
         ],
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
@@ -1424,7 +1488,23 @@
             "description": "Not Found"
           },
           "409": {
-            "description": "Conflict"
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Change Order Status to Cancelled",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderStatusRequest"
+              }
+            }
           }
         }
       }
@@ -1821,6 +1901,69 @@
         },
         "required": [
           "productId"
+        ]
+      },
+      "GetMyOrdersRequest": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "example": "1"
+          }
+        },
+        "required": [
+          "userId"
+        ]
+      },
+      "OrderPlaceRequest": {
+        "type": "object",
+        "properties": {
+          "orderItems": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "quantity": {
+                  "type": "string",
+                  "example": "2"
+                },
+                "productId": {
+                  "type": "string",
+                  "example": "32"
+                }
+              }
+            }
+          },
+          "paymentMethod": {
+            "type": "string",
+            "example": "CASH"
+          },
+          "deliveryAddressId": {
+            "type": "string",
+            "example": "3"
+          }
+        },
+        "required": [
+          "orderItems",
+          "paymentMethod",
+          "deliveryAddressId"
+        ]
+      },
+      "OrderStatusRequest": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "example": "22"
+          },
+          "userId": {
+            "type": "string",
+            "example": "1"
+          }
+        },
+        "required": [
+          "orderId",
+          "userId"
         ]
       }
     }

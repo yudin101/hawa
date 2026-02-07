@@ -88,23 +88,15 @@ export const placeOrder = catchAsync(async (req: Request, res: Response) => {
     orderItems,
   });
 
-  res.status(200).json({ message: "Order Placed", order: order });
+  res.status(201).json({ message: "Order Placed", order: order });
   return;
 });
 
 export const setOrderStatus = (action: OStatusType) => {
   return catchAsync(async (req: Request, res: Response) => {
-    const currentUserId = req.user!.id;
-    const currentUserRoleId = req.user!.roleId;
-
     const { userId: requestUserId, orderId } = matchedData(req);
 
-    let targetUserId = currentUserId;
-    if (currentUserRoleId === ROLES.ADMIN) {
-      targetUserId = requestUserId;
-    }
-
-    const order = await findOrder(targetUserId, orderId);
+    const order = await findOrder(requestUserId, orderId);
 
     if (!order) {
       res.status(404).json({ error: "Order Not Found" });
@@ -133,7 +125,7 @@ export const setOrderStatus = (action: OStatusType) => {
       return;
     }
 
-    await changeOrderStatus(targetUserId, orderId, action);
+    await changeOrderStatus(requestUserId, orderId, action);
 
     res.status(200).json({ message: `Order Status Changed To: ${action}` });
     return;

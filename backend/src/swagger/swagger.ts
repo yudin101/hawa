@@ -21,6 +21,11 @@ import {
   ProductUpdateRequest,
 } from "./schemas/product.swagger";
 import { CartAddRequest, CartDeleteRequest } from "./schemas/cart.swagger";
+import {
+  GetMyOrdersRequest,
+  OrderPlaceRequest,
+  OrderStatusRequest,
+} from "./schemas/order.swagger";
 
 const swaggerAutogen = swaggerAutogenInit({ openapi: "3.0.0" });
 
@@ -65,6 +70,9 @@ const doc = {
       ProductDeleteRequest: ProductDeleteRequest,
       CartAddRequest: CartAddRequest,
       CartDeleteRequest: CartDeleteRequest,
+      GetMyOrdersRequest: GetMyOrdersRequest,
+      OrderPlaceRequest: OrderPlaceRequest,
+      OrderStatusRequest: OrderStatusRequest,
     },
   },
 };

@@ -81,5 +81,6 @@ export const setOrderStatusSchema: Schema = {
   },
   userId: {
     ...updateUserSchema.id,
+    optional: false,
   },
 };

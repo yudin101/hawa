@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config({ quiet: true });
+
 import swaggerAutogenInit from "swagger-autogen";
 import { UserLoginRequest, UserRegisterRequest } from "./schemas/auth.swagger";
 import {
@@ -36,8 +39,8 @@ const doc = {
   },
   servers: [
     {
-      url: "http://localhost:3000",
-      description: "Local Server",
+      url: process.env.SERVER_URL || "http://localhost:3000",
+      description: "Production API",
     },
   ],
   components: {

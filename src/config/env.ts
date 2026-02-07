@@ -4,6 +4,8 @@ dotenv.config({ quiet: true });
 
 const env = {
   NODE_ENV: process.env.NODE_ENV,
+  FRONTEND_URL: process.env.FRONTEND_URL,
+  SERVER_URL: process.env.SERVER_URL,
   SERVER_PORT: parseInt(process.env.SERVER_PORT, 10),
   SESSION_SECRET: process.env.SESSION_SECRET,
   DB_USER: process.env.DB_USER,

@@ -1,7 +1,7 @@
 {
-  "name": "backend",
+  "name": "hawa",
   "version": "1.0.0",
-  "description": "",
+  "description": "An E-commerce API",
   "main": "index.js",
   "scripts": {
     "swagger": "ts-node src/swagger/swagger.ts",
@@ -10,7 +10,7 @@
     "start": "node dist/server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "yudin101",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {

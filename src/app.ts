@@ -7,7 +7,9 @@ import env from "./config/env";
 import cors from "cors";
 
 const app: Application = express();
-app.use(cors({ origin: [env.FRONTEND_URL, env.SERVER_URL] }));
+app.use(
+  cors({ origin: [env.FRONTEND_URL, env.SERVER_URL, "http://localhost:3000"] }),
+);
 app.use(express.json());
 app.use(cookieParser());
 

@@ -3,6 +3,7 @@ import { log } from "./middlewares/log.middleware";
 import routes from "./routes/index";
 import cookieParser from "cookie-parser";
 import { globalErrorHandler, handle404 } from "./middlewares/error.middleware";
+import { generalLimiter } from "./middlewares/rateLimit.middleware";
 import env from "./config/env";
 import cors from "cors";
 
@@ -14,7 +15,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(log);
-app.use("/api", routes);
+app.use("/api", generalLimiter, routes);
 app.use(handle404);
 app.use(globalErrorHandler);
 

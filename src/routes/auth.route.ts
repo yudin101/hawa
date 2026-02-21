@@ -3,6 +3,7 @@ import registerRoutes from "./register.route";
 import { loginSchema, refreshTokenSchema } from "../validators/auth.validator";
 import { validateSchema } from "../middlewares/validation.middleware";
 import { authenticate } from "../middlewares/authenticate.middleware";
+import { authLimiter } from "../middlewares/rateLimit.middleware";
 import {
   loginUser,
   logoutUser,
@@ -11,10 +12,11 @@ import {
 
 const router = Router();
 
-router.use("/register", registerRoutes);
+router.use("/register", authLimiter, registerRoutes);
 
 router.post(
   "/login",
+  authLimiter,
   validateSchema(loginSchema),
 
   /* #swagger.tags = ["Auth"] */
@@ -46,6 +48,7 @@ router.post(
 
 router.post(
   "/refresh",
+  authLimiter,
   validateSchema(refreshTokenSchema),
 
   /* #swagger.tags = ["Auth"] */

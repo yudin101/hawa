@@ -32,6 +32,8 @@ import {
 
 const swaggerAutogen = swaggerAutogenInit({ openapi: "3.0.0" });
 
+const productionUrl = process.env.SERVER_URL ? `https://${process.env.SERVER_URL}` : "https://localhost:3000"
+
 const doc = {
   info: {
     title: "Hawa API",
@@ -39,7 +41,7 @@ const doc = {
   },
   servers: [
     {
-      url: process.env.SERVER_URL || "http://localhost:3000",
+      url: productionUrl,
       description: "Production API",
     },
   ],

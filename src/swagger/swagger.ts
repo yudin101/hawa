@@ -32,7 +32,7 @@ import {
 
 const swaggerAutogen = swaggerAutogenInit({ openapi: "3.0.0" });
 
-const productionUrl = process.env.SERVER_URL ? `https://${process.env.SERVER_URL}` : "https://localhost:3000"
+const productionUrl = process.env.SERVER_URL ? `${process.env.SERVER_URL}` : "https://localhost:3000"
 
 const doc = {
   info: {

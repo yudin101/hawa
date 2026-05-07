@@ -166,7 +166,7 @@ export const initializeSchema = async (): Promise<void> => {
     `);
   } catch (err) {
     console.error(err);
-    process.exit(1);
+    throw err;
   }
 };
 

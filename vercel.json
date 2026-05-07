@@ -8,6 +8,11 @@
   ],
   "routes": [
     {
+      "src": "/",
+      "headers": { "Location": "/api/docs" },
+      "status": 308
+    },
+    {
       "src": "/(.*)",
       "dest": "api/index.ts"
     }

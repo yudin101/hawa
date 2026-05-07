@@ -32,7 +32,8 @@ export const initializeSchema = async (): Promise<void> => {
         id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
         district VARCHAR(50) NOT NULL,
         municipality VARCHAR(50) NOT NULL,
-        street_name VARCHAR(50) NOT NULL
+        street_name VARCHAR(50) NOT NULL,
+      UNIQUE (district, municipality, street_name)
     );`;
 
     const users = `
@@ -92,7 +93,7 @@ export const initializeSchema = async (): Promise<void> => {
         user_id BIGINT NOT NULL REFERENCES users (id),
         status TEXT NOT NULL DEFAULT '${OSTATUS.PENDING}'
           CONSTRAINT chk_order_status
-          CHECK (status IN (${orderStatuses.map(s => `'${s}'`).join(`, `)})),
+          CHECK (status IN (${orderStatuses.map((s) => `'${s}'`).join(`, `)})),
         order_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         total_price NUMERIC(10, 2) NOT NULL,
         delivery_address_id BIGINT NOT NULL REFERENCES addresses (id),
@@ -146,6 +147,23 @@ export const initializeSchema = async (): Promise<void> => {
     const finalQuery = tableQueries + updateTriggerQueies;
 
     await pool.query(finalQuery);
+
+    // Seeding roles
+    await pool.query(`
+      INSERT INTO roles (role)
+      VALUES ('ADMIN'), ('SELLER'), ('CUSTOMER')
+      ON CONFLICT (role) DO NOTHING;
+    `);
+
+    // Seeding address
+    await pool.query(`
+      INSERT INTO addresses (district, municipality, street_name)
+      VALUES 
+        ('KATHMANDU', 'CHANDRAGIRI', 'DAHACHOWK'), 
+        ('LALITPUR', 'LALITPUR METROPOLITAN', 'JHAMSIKHEL'), 
+        ('BHAKTAPUR', 'MADHYAPUR THIMI', 'LOKANTHALI')
+      ON CONFLICT (district, municipality, street_name) DO NOTHING;
+    `);
   } catch (err) {
     console.error(err);
     process.exit(1);
